@@ -1,14 +1,13 @@
-// 휴먼다큐 Service Worker
-const CACHE_NAME = 'tupil-v1';
+// mestory.art Service Worker
+const CACHE_NAME = 'mestory-v1';
 const ASSETS = [
-  '/today-form.html',
+  '/',
   '/today.html',
   '/today-manifest.json',
   '/today-icon-192.png',
   '/today-icon-512.png'
 ];
 
-// 설치 — 핵심 파일 캐시
 self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -18,7 +17,6 @@ self.addEventListener('install', (e) => {
   self.skipWaiting();
 });
 
-// 활성화 — 오래된 캐시 삭제
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((keys) =>
@@ -30,7 +28,6 @@ self.addEventListener('activate', (e) => {
   self.clients.claim();
 });
 
-// 요청 처리 — 네트워크 우선, 실패 시 캐시
 self.addEventListener('fetch', (e) => {
   if (!e.request.url.startsWith('http')) return;
   if (e.request.method !== 'GET') return;
