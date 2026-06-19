@@ -237,8 +237,13 @@ function buildStart() {
   const d = mkEl('div', 'slide', 'slide-start');
   d.innerHTML =
     '<div class="s0-hero">' +
-      '<div class="s0-title-kr">미스토리</div>' +
-      '<div class="s0-title-en">MESTORY</div>' +
+      '<div style="position:relative;display:inline-block;white-space:nowrap;margin-bottom:6px;">' +
+        '<div style="position:absolute;top:4px;left:-3px;width:56px;height:46px;background:#97C459;z-index:0;border-radius:60% 40% 55% 45%/45% 55% 40% 60%;opacity:0.55;transform:rotate(-1.5deg);"></div>' +
+        '<div style="font-size:44px;font-weight:700;font-family:Georgia,serif;letter-spacing:-1px;line-height:1.1;position:relative;z-index:1;white-space:nowrap;">' +
+          '<span style="color:#173404;">미</span><span style="color:#3B6D11;font-size:38px;letter-spacing:-3px;">스토리</span>' +
+        '</div>' +
+      '</div>' +
+      '<div style="font-size:10px;letter-spacing:4px;color:#639922;font-weight:400;margin-top:6px;">MESTORY</div>' +
       '<div class="s0-divider"></div>' +
       '<div class="s0-copy">사진과 짧은 글 한 줄.\nAI가 오늘을 기억할 글로\n담아드립니다.</div>' +
     '</div>' +
