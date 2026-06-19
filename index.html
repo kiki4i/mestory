@@ -772,7 +772,7 @@ if (currentLang !== 'ko') applyLang(currentLang);
         document.getElementById('feed-more').style.display = data.has_more ? 'block' : 'none';
       }
     } catch(e) {
-      document.getElementById('feed-grid').innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:rgba(255,255,255,.3);font-size:13px">잠시 후 다시 시도해주세요</div>';
+      document.getElementById('feed-grid').innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:rgba(255,255,255,.3);font-size:13px">잠시 후 다시 시도해주세요<br><small style="opacity:.4">' + (e&&e.message?e.message:String(e)) + '</small></div>';
     }
     loading = false;
   }
