@@ -44,7 +44,7 @@ input,textarea{-webkit-user-select:text;user-select:text}
   padding:4px 7px;cursor:pointer;transition:all .15s;line-height:1}
 .nav-lang:active{opacity:.6}
 .nav-lang.active{background:#C8870A;border-color:#C8870A;color:#fff}
-.nav-lang.soon{cursor:default;opacity:.35;pointer-events:none}
+.nav-lang.soon{cursor:default;opacity:.4}
 #top-nav.light-nav .nav-lang{border-color:rgba(23,52,4,.2);color:#3B6D11}
 #top-nav.light-nav .nav-lang.active{background:#27500A;border-color:#27500A;color:#EAF3DE}
 
@@ -178,10 +178,10 @@ input,textarea{-webkit-user-select:text;user-select:text}
 <div id="top-nav">
   
   <div id="nav-langs">
-    <a href="/" class="nav-lang active" title="한국어">KO</a>
-    <a href="/today-form-en.html" class="nav-lang soon" title="English">EN</a>
-    <a href="/today-form-jp.html" class="nav-lang soon" title="日本語">JP</a>
-    <a href="/today-form-zh.html" class="nav-lang soon" title="中文">CN</a>
+    <button class="nav-lang active" data-lang="ko">KO</button>
+    <button class="nav-lang soon" data-lang="en">EN</button>
+    <button class="nav-lang soon" data-lang="jp">JP</button>
+    <button class="nav-lang soon" data-lang="cn">CN</button>
   </div>
 </div>
 <div id="prog-bar"><div id="prog-fill"></div></div>
@@ -253,6 +253,8 @@ function buildStart() {
     '</div>' +
     '<button id="browse-open" class="s0-browse-btn">다른 사람의 오늘 보기 →</button>';
   d.querySelector('#s0-pick').onclick = function(){ document.getElementById('file-input').click(); };
+  d.querySelector('#my-history-btn').onclick = function(){ if(window.__openMyModal) window.__openMyModal(); };
+  d.querySelector('#browse-open').onclick = function(){ if(window.__openFeed) window.__openFeed(); };
   return d;
 }
 
@@ -400,6 +402,28 @@ function goSlide(n, anim) {
   posSlider(anim !== false);
   updateProg();
   document.getElementById('top-nav').classList.toggle('light-nav', currentSlide === 0);
+}
+
+// 언어 버튼 클릭 핸들러
+document.getElementById('nav-langs').addEventListener('click', function(e) {
+  var btn = e.target.closest('button[data-lang]');
+  if (!btn) return;
+  if (btn.dataset.lang === 'ko') return; // 이미 한국어 페이지
+  showToast('다국어 서비스 준비 중입니다');
+});
+
+function showToast(msg) {
+  var t = document.getElementById('s0-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 's0-toast';
+    t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(23,52,4,.88);color:#EAF3DE;font-size:12px;padding:10px 18px;border-radius:20px;z-index:9000;pointer-events:none;transition:opacity .3s;white-space:nowrap';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._tid);
+  t._tid = setTimeout(function(){ t.style.opacity = '0'; }, 2000);
 }
 
 function posSlider(anim) {
@@ -760,6 +784,7 @@ document.getElementById('top-nav').classList.add('light-nav');
     document.body.style.overflow = '';
     if (location.hash === '#feed') history.back();
   }
+  window.__openFeed = openFeed;
 
   // 이벤트 위임 — 동적 생성 버튼에도 작동
   document.addEventListener('click', function(e){
@@ -879,6 +904,7 @@ document.getElementById('top-nav').classList.add('light-nav');
     renderHistory();
     if (location.hash !== '#my') history.pushState(null, '', '#my');
   }
+  window.__openMyModal = openMyModal;
 
   function closeMyModal() {
     document.getElementById('my-modal').style.display = 'none';
