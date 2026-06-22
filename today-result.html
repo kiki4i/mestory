@@ -410,6 +410,13 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
 
     var html = '';
 
+    var firstShot = null;
+    if (data.shots){
+      for (var i = 0; i < data.shots.length; i++){
+        if (data.shots[i].image){ firstShot = data.shots[i]; break; }
+      }
+    }
+
     // 1. Hero
     html += '<div class="hero"'
       + (firstImg ? ' style="background-image:url(\'' + esc(firstImg) + '\')"' : '') + '>'
@@ -420,6 +427,19 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
       + (data.identity ? '<div class="hero-identity">' + esc(data.identity) + '</div>' : '')
       + (data.created_at ? '<div class="hero-date">' + esc(data.created_at) + '</div>' : '')
       + '</div></div>';
+
+    // 1-b. First shot caption/poem (히어로 사진의 캡션·시구)
+    if (firstShot && (firstShot.text || firstShot.poem)){
+      html += '<div class="shot-body" style="background:#f5f2eb;padding:22px 24px 28px">';
+      html += '<div class="shot-num">SHOT ' + String(firstShot.index).padStart(2,'0') + '</div>';
+      if (firstShot.text) html += '<div class="shot-caption">' + esc(firstShot.text) + '</div>';
+      if (firstShot.poem){
+        var fp = firstShot.poem.trim().split('\n').filter(function(l){ return l.trim(); })
+                   .map(function(l){ return esc(l); }).join('<br>');
+        html += '<div class="shot-poem">' + fp + '</div>';
+      }
+      html += '</div>';
+    }
 
     // 2. Poem
     if (data.today_poem){
