@@ -109,18 +109,15 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
   var params = new URLSearchParams(location.search);
   var docId = params.get('id');
 
-  // ── TTS / 슬라이드쇼 상태 ──
+  // ── 슬라이드쇼 상태 ──
   var _ttsLang = 'ko';
-  var _audioCtx = null;
-  var _audioSource = null;
   var _slideTimer = null;
   var _isPlaying = false;
   var _currentData = null;
   var _bgmAudio = null;
   var _ssActiveImg = 'a';
   var _captionTimer = null;
-  // 무료 피아노 BGM (Pixabay License) — 필요 시 다른 URL로 교체 가능
-  var BGM_URL = 'https://cdn.pixabay.com/audio/2022/01/18/audio_d0c6ff1bef.mp3';
+  var BGM_URL = 'https://kiki4i.github.io/humandocu/bugo/BGM.mp3';
 
   function _getPoem(data, lang) {
     var map = {
@@ -147,31 +144,6 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     return '';
   }
 
-  function _buildTtsText(data, lang) {
-    var poem = _getPoem(data, lang);
-    var nick = (data.nickname || '').trim();
-    var date = _formatDate(data.created_at, lang);
-    var intro = '';
-    if (lang === 'ko') {
-      intro = nick
-        ? nick + '님의 ' + (date ? date + ' ' : '') + '오늘을 담은 시... '
-        : '오늘을 담은 시... ';
-    } else if (lang === 'en') {
-      intro = nick
-        ? 'A poem for ' + nick + (date ? ', ' + date : '') + '... '
-        : 'A poem for today... ';
-    } else if (lang === 'ja') {
-      intro = nick
-        ? nick + 'さんの' + (date ? date + 'の' : '') + '今日を詠んだ詩…'
-        : '今日を詠んだ詩…';
-    } else if (lang === 'zh') {
-      intro = nick
-        ? nick + '的' + (date ? date + '的' : '') + '今日之诗…'
-        : '今日之诗…';
-    }
-    return intro + poem;
-  }
-
   function _getImages(data) {
     var imgs = [];
     (data.shots || []).forEach(function(s){ if(s.image) imgs.push(s.image); });
@@ -193,8 +165,6 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     _isPlaying = false;
     if(_slideTimer){ clearTimeout(_slideTimer); _slideTimer = null; }
     if(_captionTimer){ clearTimeout(_captionTimer); _captionTimer = null; }
-    if(_audioSource){ try{ _audioSource.stop(); }catch(e){} _audioSource = null; }
-    if(_audioCtx){ _audioCtx.close(); _audioCtx = null; }
     if(_bgmAudio){ _bgmAudio.pause(); _bgmAudio.currentTime = 0; _bgmAudio = null; }
     var ov = document.getElementById('slideshow-overlay');
     if(ov) ov.style.display = 'none';
@@ -252,7 +222,7 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     });
   }
 
-  function _startSlideshow(audioB64, imgs) {
+  function _startSlideshow(imgs) {
     _isPlaying = true;
     // 상태 초기화
     var ts = document.getElementById('ss-text-screen');
@@ -281,10 +251,10 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     if(_bgmAudio){ try{ _bgmAudio.pause(); }catch(e){} }
     _bgmAudio = new Audio(BGM_URL);
     _bgmAudio.loop = true;
-    _bgmAudio.volume = 0.3;
+    _bgmAudio.volume = 0.25;
     _bgmAudio.play().catch(function(){});
 
-    // 인트로 화면 표시
+    // 인트로 화면 (1.5초)
     var nick = (_currentData && _currentData.nickname) || '';
     var date = _currentData ? _formatDate(_currentData.created_at, _ttsLang) : '';
     var introLabel = {ko:'오늘을 담은 시', en:'A Poem for Today', ja:'今日を詠んだ詩', zh:'今日之诗'}[_ttsLang] || '오늘을 담은 시';
@@ -296,51 +266,29 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     );
     _updateDots(imgs.length, 0);
 
-    // TTS 오디오 디코딩
-    var raw = atob(audioB64);
-    var buf = new ArrayBuffer(raw.length);
-    var view = new Uint8Array(buf);
-    for(var i = 0; i < raw.length; i++) view[i] = raw.charCodeAt(i);
-
-    _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    _audioCtx.decodeAudioData(buf, function(decoded){
-      var totalDur = decoded.duration;
-      var introDur = 1.5;
-      var photoDur = Math.max(3000, ((totalDur - introDur) / imgs.length) * 1000);
-
-      // 인트로 1.5초 후 TTS 시작 + 사진 전환
-      _slideTimer = setTimeout(function(){
-        _audioSource = _audioCtx.createBufferSource();
-        _audioSource.buffer = decoded;
-        _audioSource.connect(_audioCtx.destination);
-        _audioSource.onended = function(){ _stopSlideshow(); };
-        _audioSource.start(0);
-
-        var photoIdx = 0;
-        function showPhoto(idx){
-          if(!_isPlaying) return;
-          if(idx < imgs.length){
-            _ssCrossfadeTo(imgs[idx], captions[idx]);
-            _updateDots(imgs.length, idx);
-            _slideTimer = setTimeout(function(){ showPhoto(idx + 1); }, photoDur);
-          } else {
-            // 아웃로: 시 전체 본문
-            var pLines = _getPoem(_currentData, _ttsLang).trim().split('\n').filter(function(l){ return l.trim(); });
-            _ssShowText(
-              '<div style="max-width:340px">'
-              + pLines.map(function(l){
-                  return '<div style="font-family:Georgia,serif;font-size:18px;color:#f9f6f0;line-height:2.1;letter-spacing:.02em">' + esc(l) + '</div>';
-                }).join('')
-              + '</div>'
-            );
-          }
+    // 인트로 1.5초 후 사진 순환 (사진당 4초)
+    _slideTimer = setTimeout(function(){
+      function showPhoto(idx){
+        if(!_isPlaying) return;
+        if(idx < imgs.length){
+          _ssCrossfadeTo(imgs[idx], captions[idx]);
+          _updateDots(imgs.length, idx);
+          _slideTimer = setTimeout(function(){ showPhoto(idx + 1); }, 4000);
+        } else {
+          // 아웃로: 시 전체 본문 5초 후 자동 종료
+          var pLines = _getPoem(_currentData, _ttsLang).trim().split('\n').filter(function(l){ return l.trim(); });
+          _ssShowText(
+            '<div style="max-width:340px">'
+            + pLines.map(function(l){
+                return '<div style="font-family:Georgia,serif;font-size:18px;color:#f9f6f0;line-height:2.1;letter-spacing:.02em">' + esc(l) + '</div>';
+              }).join('')
+            + '</div>'
+          );
+          _slideTimer = setTimeout(function(){ _stopSlideshow(); }, 5000);
         }
-        showPhoto(0);
-      }, introDur * 1000);
-    }, function(){
-      _stopSlideshow();
-      alert('오디오 디코딩 오류가 발생했습니다.');
-    });
+      }
+      showPhoto(0);
+    }, 1500);
   }
 
   window.selectLang = function(lang, el) {
@@ -354,28 +302,9 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
   window.togglePlay = function() {
     if(_isPlaying){ _stopSlideshow(); return; }
     if(!_currentData) return;
-    var text = _buildTtsText(_currentData, _ttsLang);
-    if(!text){ alert('시 텍스트가 없습니다.'); return; }
     var imgs = _getImages(_currentData);
     if(!imgs.length){ alert('슬라이드쇼용 사진이 없습니다.'); return; }
-
-    var btn = document.getElementById('play-btn');
-    if(btn){ btn.textContent = '낭독 준비 중...'; btn.disabled = true; }
-
-    fetch(SERVER + '/api/tts', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({text: text, lang: _ttsLang})
-    })
-    .then(function(r){ return r.json(); })
-    .then(function(json){
-      if(!json.audio) throw new Error(json.error || 'TTS 실패');
-      _startSlideshow(json.audio, imgs);
-    })
-    .catch(function(e){
-      if(btn){ btn.textContent = '▶ 슬라이드쇼 재생'; btn.disabled = false; }
-      alert('TTS 오류: ' + (e.message || '알 수 없는 오류'));
-    });
+    _startSlideshow(imgs);
   };
 
   if (!docId) { showError(); return; }
