@@ -116,6 +116,46 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     return map[lang] || data.today_poem || '';
   }
 
+  function _formatDate(dateStr, lang) {
+    if (!dateStr) return '';
+    var m = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (!m) return '';
+    var y = parseInt(m[1], 10), mo = parseInt(m[2], 10), d = parseInt(m[3], 10);
+    if (lang === 'ko') return y + '년 ' + mo + '월 ' + d + '일';
+    if (lang === 'en') {
+      var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      return months[mo-1] + ' ' + d + ', ' + y;
+    }
+    if (lang === 'ja') return y + '年' + mo + '月' + d + '日';
+    if (lang === 'zh') return y + '年' + mo + '月' + d + '日';
+    return '';
+  }
+
+  function _buildTtsText(data, lang) {
+    var poem = _getPoem(data, lang);
+    var nick = (data.nickname || '').trim();
+    var date = _formatDate(data.created_at, lang);
+    var intro = '';
+    if (lang === 'ko') {
+      intro = nick
+        ? nick + '님의 ' + (date ? date + ' ' : '') + '오늘을 담은 시. '
+        : '오늘을 담은 시. ';
+    } else if (lang === 'en') {
+      intro = nick
+        ? 'A poem for ' + nick + (date ? ', ' + date : '') + '. '
+        : 'A poem for today. ';
+    } else if (lang === 'ja') {
+      intro = nick
+        ? nick + 'さんの' + (date ? date + 'の' : '') + '今日を詠んだ詩。'
+        : '今日を詠んだ詩。';
+    } else if (lang === 'zh') {
+      intro = nick
+        ? nick + '的' + (date ? date + '的' : '') + '今日之诗。'
+        : '今日之诗。';
+    }
+    return intro + poem;
+  }
+
   function _getImages(data) {
     var imgs = [];
     (data.shots || []).forEach(function(s){ if(s.image) imgs.push(s.image); });
@@ -200,7 +240,7 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
   window.togglePlay = function() {
     if(_isPlaying){ _stopSlideshow(); return; }
     if(!_currentData) return;
-    var text = _getPoem(_currentData, _ttsLang);
+    var text = _buildTtsText(_currentData, _ttsLang);
     if(!text){ alert('시 텍스트가 없습니다.'); return; }
     var imgs = _getImages(_currentData);
     if(!imgs.length){ alert('슬라이드쇼용 사진이 없습니다.'); return; }
