@@ -318,22 +318,38 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     _ttsLang = lang;
     document.querySelectorAll('.lang-tab').forEach(function(b){ b.classList.remove('active'); });
     el.classList.add('active');
+    if(!_currentData) return;
     var pd = document.getElementById('poem-display');
-    if(!pd || !_currentData) return;
+
     if(lang === 'ko'){
-      pd.innerHTML = poemLinesHtml(_currentData.today_poem);
+      if(pd) pd.innerHTML = poemLinesHtml(_currentData.today_poem);
+      (_currentData.shots||[]).forEach(function(s,i){
+        var els = document.querySelectorAll('.shot-poem-line[data-idx="'+i+'"]');
+        els.forEach(function(e){ if(s.poem) e.innerHTML = s.poem.trim().split('\n').filter(function(l){return l.trim();}).map(function(l){return esc(l);}).join('<br>'); });
+      });
       return;
     }
+
     var cached = _getPoem(_currentData, lang);
     if(cached && cached !== _currentData.today_poem){
-      pd.innerHTML = poemLinesHtml(cached);
+      if(pd) pd.innerHTML = poemLinesHtml(cached);
+      (_currentData.shots||[]).forEach(function(s,i){
+        var sp = lang==='en'?s.poem_en:(lang==='ja'?s.poem_ja:s.poem_zh);
+        if(sp){
+          var els = document.querySelectorAll('.shot-poem-line[data-idx="'+i+'"]');
+          els.forEach(function(e){ e.innerHTML = sp.trim().split('\n').filter(function(l){return l.trim();}).map(function(l){return esc(l);}).join('<br>'); });
+        }
+      });
       return;
     }
-    pd.innerHTML = '<div style="text-align:center;padding:16px;color:#aaa;font-size:12px">번역 중...</div>';
+
+    if(pd) pd.innerHTML = '<div style="text-align:center;padding:16px;color:#aaa;font-size:12px">번역 중...</div>';
     var langMap = {en:'en', ja:'jp', zh:'zh'};
+    var texts = {poem: _currentData.today_poem};
+    (_currentData.shots||[]).forEach(function(s,i){ if(s.poem) texts['shot'+i]=s.poem; });
     fetch(SERVER + '/api/translate', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({lang: langMap[lang]||lang, texts:{poem: _currentData.today_poem}})
+      body: JSON.stringify({lang: langMap[lang]||lang, texts: texts})
     }).then(function(r){ return r.ok ? r.json() : Promise.reject(); })
       .then(function(j){
         var t = j.translations && j.translations.poem;
@@ -341,15 +357,23 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
           if(lang==='en') _currentData.today_poem_en = t;
           if(lang==='ja') _currentData.today_poem_ja = t;
           if(lang==='zh') _currentData.today_poem_zh = t;
-          pd.innerHTML = poemLinesHtml(t);
-        } else {
-          pd.innerHTML = poemLinesHtml(_currentData.today_poem);
-        }
+          if(pd) pd.innerHTML = poemLinesHtml(t);
+        } else { if(pd) pd.innerHTML = poemLinesHtml(_currentData.today_poem); }
+        (_currentData.shots||[]).forEach(function(s,i){
+          var t2 = j.translations && j.translations['shot'+i];
+          if(t2){
+            if(lang==='en') s.poem_en = t2;
+            if(lang==='ja') s.poem_ja = t2;
+            if(lang==='zh') s.poem_zh = t2;
+            var els = document.querySelectorAll('.shot-poem-line[data-idx="'+i+'"]');
+            els.forEach(function(e){ e.innerHTML = t2.trim().split('\n').filter(function(l){return l.trim();}).map(function(l){return esc(l);}).join('<br>'); });
+          }
+        });
       })
-      .catch(function(){ pd.innerHTML = poemLinesHtml(_currentData.today_poem); });
+      .catch(function(){ if(pd) pd.innerHTML = poemLinesHtml(_currentData.today_poem); });
   };
 
-  window.togglePlay = function() {
+    window.togglePlay = function() {
     if(_isPlaying){ _stopSlideshow(); return; }
     if(!_currentData) return;
     var imgs = _getImages(_currentData);
