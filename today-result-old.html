@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>미스토리</title>
+<meta property="og:type" content="website">
+<meta property="og:title" content="미스토리 — 나의 오늘, 나의 이야기">
+<meta property="og:description" content="사진과 짧은 글 한 줄. AI가 오늘을 기억할 글로 담아드립니다.">
+<meta property="og:image" content="https://mestory.art/today-icon-512.png">
+<meta property="og:url" content="https://mestory.art/today-result.html">
+<meta name="theme-color" content="#27500A">
+<link rel="icon" href="/today-icon-192.png">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
+.wrap{max-width:680px;margin:0 auto;background:#fff;min-height:100vh}
+#loading{display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:16px;background:#0f0d09}
+.dot{width:8px;height:8px;border-radius:50%;background:#c8a96e;display:inline-block;animation:pulse 1.4s ease-in-out infinite}
+.dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
+@keyframes pulse{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
+#error-box{display:none;min-height:100vh;align-items:center;justify-content:center;text-align:center;padding:40px;flex-direction:column;gap:16px}
+.hero{background:#0f0d09;padding:64px 40px;text-align:center}
+.hero-sub{font-size:11px;color:rgba(200,169,110,.6);letter-spacing:.25em;margin-bottom:16px}
+.hero-name{font-family:Georgia,serif;font-size:36px;color:#f9f6f0;font-weight:300;margin-bottom:8px}
+.hero-identity{font-size:15px;color:rgba(249,246,240,.5);font-style:italic;line-height:1.8;margin-top:8px}
+.hero-date{font-size:12px;color:rgba(200,169,110,.55);letter-spacing:.04em;margin-top:10px}
+.section{padding:48px 40px}
+.section-label{font-size:11px;color:#9e8250;letter-spacing:.2em;margin-bottom:24px}
+.rep-poem{padding:32px;background:#0f0d09;border-radius:4px;text-align:center}
+.shot-card{margin-bottom:40px;background:#faf7f2;border-radius:4px;overflow:hidden}
+.shot-img{width:100%;display:block;height:auto}
+.shot-body{padding:24px 28px}
+.shot-num{font-size:11px;color:#9e8250;letter-spacing:.15em;margin-bottom:6px}
+.shot-text{font-size:14px;color:#6b6050;line-height:1.8;margin-bottom:20px;font-style:italic}
+.shot-poem-wrap{border-top:1px solid #e5dece;padding-top:20px}
+.shot-poem-inner{background:#FFF8ED;border-radius:4px;padding:16px 18px;font-size:13px}
+.shot-poem-line{color:#5a4a30;line-height:1.8}
+.last-msg{margin:40px 0;padding:24px 28px;border-left:3px solid #c8a96e;background:#faf7f2}
+.last-msg-to{font-size:11px;color:#9e8250;letter-spacing:.1em;margin-bottom:10px}
+.last-msg-text{font-size:18px;color:#2d2a22;font-style:italic;line-height:1.8}
+.share-wrap{background:#faf7f2;padding:24px 40px;border-top:1px solid #e5dece;text-align:center}
+.share-label{font-size:11px;color:#9e8250;letter-spacing:.1em;margin-bottom:8px}
+.share-url{font-size:12px;color:#6b6050;margin-bottom:14px;word-break:break-all}
+.share-btns{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.btn-kakao{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:#FEE500;border:none;border-radius:20px;font-size:13px;color:#3C1E1E;cursor:pointer;font-family:inherit;font-weight:600}
+.btn-copy{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:#fff;border:1px solid #c8a96e;border-radius:20px;font-size:13px;color:#9e8250;cursor:pointer;font-family:inherit}
+.share-tagline{font-size:12px;color:#c8a96e;line-height:1.8}
+.cta-wrap{background:#27500A;padding:36px 40px;text-align:center}
+.cta-sub{font-size:12px;color:rgba(234,243,222,.7);letter-spacing:.15em;margin-bottom:10px}
+.cta-title{font-size:20px;color:#EAF3DE;font-weight:600;margin-bottom:6px;line-height:1.5}
+.cta-desc{font-size:13px;color:rgba(234,243,222,.75);margin-bottom:20px;line-height:1.7}
+.cta-btn{display:inline-block;padding:14px 36px;background:#EAF3DE;border-radius:4px;font-size:14px;font-weight:700;color:#27500A;text-decoration:none;letter-spacing:.06em}
+.footer{padding:24px 40px;background:#f9f6f0;text-align:center;border-top:1px solid #e5dece}
+.footer a{color:#9e8250;text-decoration:none;font-size:12px}
+@media(max-width:600px){
+  .section{padding:32px 20px}
+  .hero{padding:48px 20px}
+  .share-wrap,.cta-wrap{padding:24px 20px}
+  .shot-body{padding:20px}
+  .last-msg{margin:24px 0;padding:20px}
+}
+.lang-tabs{display:flex;gap:4px}
+.lang-tab{padding:4px 10px;border:1px solid #c8a96e;background:transparent;border-radius:20px;font-size:11px;color:#9e8250;cursor:pointer;font-family:inherit;letter-spacing:.05em;transition:background .15s,color .15s}
+.lang-tab.active{background:#c8a96e;color:#fff;border-color:#c8a96e}
+.lang-tab-off{opacity:.35;cursor:not-allowed}
+.play-btn{padding:10px 28px;background:#27500A;border:none;border-radius:20px;font-size:13px;color:#EAF3DE;cursor:pointer;font-family:inherit;letter-spacing:.05em;transition:opacity .15s}
+.play-btn:disabled{opacity:.5;cursor:default}
+#slideshow-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;background:#0a0a0a;flex-direction:column;align-items:stretch}
+#ss-stage{position:relative;flex:1;background:#000;overflow:hidden;display:flex;align-items:center;justify-content:center;min-height:0}
+.ss-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s ease}
+#ss-caption{position:absolute;bottom:0;left:0;right:0;padding:48px 24px 22px;background:linear-gradient(transparent,rgba(0,0,0,.75));color:#fff;font-size:14px;line-height:1.75;text-align:center;opacity:0;transition:opacity .5s ease;pointer-events:none}
+#ss-text-screen{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;padding:48px 36px;text-align:center;background:#0a0a0a;opacity:0;transition:opacity .8s ease}
+#ss-footer{display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px 0 22px;background:#0a0a0a;flex-shrink:0}
+#slideshow-dots{display:flex;gap:6px;align-items:center;min-height:8px}
+#slideshow-stop-btn{padding:8px 28px;background:transparent;border:1px solid rgba(200,169,110,.5);border-radius:20px;color:rgba(200,169,110,.8);font-size:13px;cursor:pointer;font-family:inherit}
+</style>
+</head>
+<body>
+<div id="loading">
+  <div style="display:flex;gap:6px">
+    <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+  </div>
+  <div style="font-size:12px;color:rgba(200,169,110,.5);letter-spacing:.1em;margin-top:4px">미스토리 · MESTORY</div>
+</div>
+<div id="error-box" style="display:none">
+  <div style="font-size:18px;color:#6b6050">페이지를 찾을 수 없습니다.</div>
+  <a href="https://mestory.art" style="font-size:13px;color:#27500A;text-decoration:none">← 미스토리로</a>
+</div>
+<div class="wrap" id="main" style="display:none"></div>
+
+<div id="slideshow-overlay">
+  <div id="ss-stage">
+    <img id="ss-img-a" class="ss-img" alt="">
+    <img id="ss-img-b" class="ss-img" alt="">
+    <div id="ss-caption"></div>
+    <div id="ss-text-screen"></div>
+  </div>
+  <div id="ss-footer">
+    <div id="slideshow-dots"></div>
+    <button id="slideshow-stop-btn" onclick="window.stopSlideshow()">■ 정지</button>
+  </div>
+</div>
+
+<div id="del-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;
+  z-index:9998;background:rgba(0,0,0,.52);align-items:center;justify-content:center;padding:20px">
+  <div id="del-modal-box" style="background:#fff;border-radius:14px;padding:28px 22px;
+    width:100%;max-width:320px;box-sizing:border-box"></div>
+</div>
+
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" integrity="sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4" crossorigin="anonymous"></script>
+<script>
+(function(){
+  var SERVER = 'https://humandocu-server-production.up.railway.app';
+  var params = new URLSearchParams(location.search);
+  var docId = params.get('id');
+
+  // ── 슬라이드쇼 상태 ──
+  var _ttsLang = 'ko';
+  var _slideTimer = null;
+  var _isPlaying = false;
+  var _currentData = null;
+  var _bgmAudio = null;
+  var _ssActiveImg = 'a';
+  var _captionTimer = null;
+  var BGM_URL = 'https://kiki4i.github.io/humandocu/bugo/BGM.mp3';
+
+  function _getPoem(data, lang) {
+    var map = {
+      ko: data.today_poem || '',
+      en: data.today_poem_en || data.today_poem || '',
+      ja: data.today_poem_ja || data.today_poem || '',
+      zh: data.today_poem_zh || data.today_poem || '',
+    };
+    return map[lang] || data.today_poem || '';
+  }
+
+  function _formatDate(dateStr, lang) {
+    if (!dateStr) return '';
+    var m = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (!m) return '';
+    var y = parseInt(m[1], 10), mo = parseInt(m[2], 10), d = parseInt(m[3], 10);
+    if (lang === 'ko') return y + '년 ' + mo + '월 ' + d + '일';
+    if (lang === 'en') {
+      var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      return months[mo-1] + ' ' + d + ', ' + y;
+    }
+    if (lang === 'ja') return y + '年' + mo + '月' + d + '日';
+    if (lang === 'zh') return y + '年' + mo + '月' + d + '日';
+    return '';
+  }
+
+  function _getImages(data) {
+    var imgs = [];
+    (data.shots || []).forEach(function(s){ if(s.image) imgs.push(s.image); });
+    return imgs;
+  }
+
+  function _updateDots(total, cur) {
+    var el = document.getElementById('slideshow-dots');
+    if(!el) return;
+    var h = '';
+    for(var i=0;i<total;i++){
+      h += '<span style="width:6px;height:6px;border-radius:50%;display:inline-block;background:'
+        +(i===cur?'#c8a96e':'rgba(200,169,110,0.3)')+'"></span>';
+    }
+    el.innerHTML = h;
+  }
+
+  function _stopSlideshow() {
+    _isPlaying = false;
+    if(_slideTimer){ clearTimeout(_slideTimer); _slideTimer = null; }
+    if(_captionTimer){ clearTimeout(_captionTimer); _captionTimer = null; }
+    if(_bgmAudio){ _bgmAudio.pause(); _bgmAudio.currentTime = 0; _bgmAudio = null; }
+    var ov = document.getElementById('slideshow-overlay');
+    if(ov) ov.style.display = 'none';
+    var btn = document.getElementById('play-btn');
+    if(btn){ btn.textContent = '▶ 슬라이드쇼 재생'; btn.disabled = false; }
+  }
+  window.stopSlideshow = _stopSlideshow;
+
+  // 사진 크로스페이드 전환 + 캡션 페이드인
+  function _ssCrossfadeTo(url, captionText) {
+    var next = _ssActiveImg === 'a' ? 'b' : 'a';
+    var nextEl = document.getElementById('ss-img-' + next);
+    var prevEl = document.getElementById('ss-img-' + _ssActiveImg);
+    var cap = document.getElementById('ss-caption');
+    var ts  = document.getElementById('ss-text-screen');
+    if(cap) cap.style.opacity = '0';
+    if(_captionTimer){ clearTimeout(_captionTimer); _captionTimer = null; }
+    // 텍스트 화면이 열려 있으면 같이 페이드아웃
+    if(ts && ts.style.display !== 'none'){
+      ts.style.opacity = '0';
+      setTimeout(function(){ ts.style.display = 'none'; }, 820);
+    }
+    var preload = new Image();
+    preload.onload = preload.onerror = function(){
+      nextEl.src = url;
+      nextEl.getBoundingClientRect(); // force reflow
+      nextEl.style.opacity = '1';
+      prevEl.style.opacity = '0';
+      _ssActiveImg = next;
+      if(cap && captionText){
+        _captionTimer = setTimeout(function(){
+          cap.textContent = captionText;
+          cap.style.opacity = '1';
+        }, 500);
+      }
+    };
+    preload.src = url;
+  }
+
+  // 어두운 배경 텍스트 화면 표시 (인트로 / 아웃로)
+  function _ssShowText(innerHtml) {
+    var ts = document.getElementById('ss-text-screen');
+    var a  = document.getElementById('ss-img-a');
+    var b  = document.getElementById('ss-img-b');
+    var cap = document.getElementById('ss-caption');
+    if(a) a.style.opacity = '0';
+    if(b) b.style.opacity = '0';
+    if(cap){ cap.style.opacity = '0'; cap.textContent = ''; }
+    _ssActiveImg = 'a';
+    ts.innerHTML = innerHtml;
+    ts.style.opacity = '0';
+    ts.style.display = 'flex';
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){ ts.style.opacity = '1'; });
+    });
+  }
+
+  function _startSlideshow(imgs) {
+    _isPlaying = true;
+    // 상태 초기화
+    var ts = document.getElementById('ss-text-screen');
+    if(ts){ ts.style.opacity = '0'; ts.style.display = 'none'; ts.innerHTML = ''; }
+    var a = document.getElementById('ss-img-a'), b = document.getElementById('ss-img-b');
+    if(a){ a.style.opacity = '0'; a.src = ''; }
+    if(b){ b.style.opacity = '0'; b.src = ''; }
+    _ssActiveImg = 'a';
+
+    var btn = document.getElementById('play-btn');
+    if(btn){ btn.textContent = '■ 정지'; btn.disabled = false; }
+
+    var ov = document.getElementById('slideshow-overlay');
+    if(ov) ov.style.display = 'flex';
+
+    // 캡션 배열 (shot.text)
+    var captions = imgs.map(function(url){
+      var shots = (_currentData && _currentData.shots) || [];
+      for(var j = 0; j < shots.length; j++){
+        if(shots[j].image === url) return shots[j].text || '';
+      }
+      return '';
+    });
+
+    // BGM 시작
+    if(_bgmAudio){ try{ _bgmAudio.pause(); }catch(e){} }
+    _bgmAudio = new Audio(BGM_URL);
+    _bgmAudio.loop = true;
+    _bgmAudio.volume = 0.25;
+    _bgmAudio.play().catch(function(){});
+
+    // 인트로 화면 (1.5초)
+    var nick = (_currentData && _currentData.nickname) || '';
+    var date = _currentData ? _formatDate(_currentData.created_at, _ttsLang) : '';
+    var introLabel = {ko:'오늘을 담은 시', en:'A Poem for Today', ja:'今日を詠んだ詩', zh:'今日之诗'}[_ttsLang] || '오늘을 담은 시';
+    _ssShowText(
+      '<div style="color:rgba(200,169,110,.65);font-size:10px;letter-spacing:.3em;margin-bottom:22px">MESTORY</div>'
+      + (nick ? '<div style="font-family:Georgia,serif;font-size:30px;color:#f9f6f0;font-weight:300;margin-bottom:10px">' + esc(nick) + '</div>' : '')
+      + (date ? '<div style="font-size:13px;color:rgba(249,246,240,.4);margin-bottom:26px">' + esc(date) + '</div>' : '')
+      + '<div style="font-size:15px;color:rgba(200,169,110,.85);letter-spacing:.08em">' + introLabel + '</div>'
+    );
+    _updateDots(imgs.length, 0);
+
+    // 인트로 1.5초 후 사진 순환 (사진당 4초)
+    _slideTimer = setTimeout(function(){
+      function showPhoto(idx){
+        if(!_isPlaying) return;
+        if(idx < imgs.length){
+          _ssCrossfadeTo(imgs[idx], captions[idx]);
+          _updateDots(imgs.length, idx);
+          _slideTimer = setTimeout(function(){ showPhoto(idx + 1); }, 4000);
+        } else {
+          // 아웃로: 시 전체 본문 5초 후 자동 종료
+          var pLines = _getPoem(_currentData, _ttsLang).trim().split('\n').filter(function(l){ return l.trim(); });
+          _ssShowText(
+            '<div style="max-width:340px">'
+            + pLines.map(function(l){
+                return '<div style="font-family:Georgia,serif;font-size:18px;color:#f9f6f0;line-height:2.1;letter-spacing:.02em">' + esc(l) + '</div>';
+              }).join('')
+            + '</div>'
+          );
+          _slideTimer = setTimeout(function(){
+            if(!_isPlaying) return;
+            _ssShowText(
+              '<div style="color:rgba(200,169,110,.65);font-size:10px;letter-spacing:.3em;margin-bottom:22px">MESTORY</div>'
+              + (nick ? '<div style="font-family:Georgia,serif;font-size:30px;color:#f9f6f0;font-weight:300;margin-bottom:10px">' + esc(nick) + '</div>' : '')
+              + (date ? '<div style="font-size:13px;color:rgba(249,246,240,.4);margin-bottom:26px">' + esc(date) + '</div>' : '')
+              + '<div style="font-size:15px;color:rgba(200,169,110,.85);letter-spacing:.08em">' + introLabel + '</div>'
+            );
+            _updateDots(imgs.length, 0);
+            _slideTimer = setTimeout(function(){ showPhoto(0); }, 1500);
+          }, 5000);
+        }
+      }
+      showPhoto(0);
+    }, 1500);
+  }
+
+  window.selectLang = function(lang, el) {
+    _ttsLang = lang;
+    document.querySelectorAll('.lang-tab').forEach(function(b){ b.classList.remove('active'); });
+    el.classList.add('active');
+    var pd = document.getElementById('poem-display');
+    if(pd && _currentData) pd.innerHTML = poemLinesHtml(_getPoem(_currentData, lang));
+  };
+
+  window.togglePlay = function() {
+    if(_isPlaying){ _stopSlideshow(); return; }
+    if(!_currentData) return;
+    var imgs = _getImages(_currentData);
+    if(!imgs.length){ alert('슬라이드쇼용 사진이 없습니다.'); return; }
+    _startSlideshow(imgs);
+  };
+
+  if (!docId) { showError(); return; }
+
+  var pageUrl = 'https://mestory.art/today-result.html?id=' + encodeURIComponent(docId);
+
+  fetch(SERVER + '/api/today/data/' + encodeURIComponent(docId))
+    .then(function(r){ return r.ok ? r.json() : Promise.reject(r.status); })
+    .then(function(data){ render(data); })
+    .catch(function(){ showError(); });
+
+  function showError(){
+    document.getElementById('loading').style.display = 'none';
+    var eb = document.getElementById('error-box');
+    eb.style.display = 'flex';
+  }
+
+  function esc(s){
+    return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  var GENRE_COLORS = {
+    '감동명작':['#7B4F1E','#FFF3E0'],'히어로 액션':['#7A0000','#FFEAEA'],
+    '잔잔한 다큐':['#1A2A5E','#EAF0FF'],'멜로 로맨스':['#7A1040','#FFF0F5'],
+    '병맛 코미디':['#7A3A00','#FFF5E8'],'반전 스릴러':['#3A0060','#F5EAFF'],
+    'touching':['#7B4F1E','#FFF3E0'],'hero action':['#7A0000','#FFEAEA'],
+    'quiet doc':['#1A2A5E','#EAF0FF'],'melo romance':['#7A1040','#FFF0F5'],
+    'weird comedy':['#7A3A00','#FFF5E8'],'twist thriller':['#3A0060','#F5EAFF'],
+  };
+  function genreBadge(tone){
+    if(!tone) return '';
+    var c = GENRE_COLORS[tone] || GENRE_COLORS[tone.toLowerCase()] || ['#7B4F1E','#FFF3E0'];
+    return '<span style="display:inline-block;padding:3px 10px;border-radius:20px;background:'+c[1]+';color:'+c[0]+';font-size:11px;letter-spacing:.08em;font-weight:600">'+esc(tone)+'</span>';
+  }
+
+  function poemLinesHtml(text, fs, color){
+    fs = fs||'17px'; color = color||'#f9f6f0';
+    return text.trim().split('\n').filter(function(l){return l.trim();}).map(function(l){
+      return '<div style="line-height:2;font-size:'+fs+';color:'+color+';font-family:Georgia,serif;letter-spacing:.02em">'+esc(l)+'</div>';
+    }).join('');
+  }
+
+  function render(data){
+    _currentData = data;
+    document.title = '미스토리 · ' + esc(data.nickname||'');
+
+    var hasImgs = (data.shots||[]).some(function(s){return !!s.image;});
+    var firstImg = '';
+    if(data.shots){
+      for(var i=0;i<data.shots.length;i++){
+        if(data.shots[i].image){ firstImg=data.shots[i].image; break; }
+      }
+    }
+    var shareDesc = data.identity || '';
+    if(!shareDesc && data.today_poem){
+      var pl = data.today_poem.split('\n').filter(function(l){return l.trim();});
+      if(pl.length) shareDesc = pl[0];
+    }
+    if(!shareDesc && data.shots && data.shots.length) shareDesc = data.shots[0].text || '';
+    if(!shareDesc) shareDesc = '사진과 짧은 글 한 줄. AI가 오늘을 기억할 글로 담아드립니다.';
+
+    window._share = { img: firstImg||'https://mestory.art/today-icon-512.png', desc: shareDesc, url: pageUrl };
+
+    // Hero
+    var html = '<div class="hero">'
+      +'<div class="hero-sub">미스토리 · MESTORY</div>'
+      +'<div class="hero-name">'+esc(data.nickname)+'</div>'
+      +(data.identity?'<div class="hero-identity">'+esc(data.identity)+'</div>':'')
+      +(data.created_at?'<div class="hero-date">'+esc(data.created_at)+'</div>':'')
+      +'</div>';
+
+    // Today poem
+    if(data.today_poem){
+      var langTabsHtml = '<div class="lang-tabs">'
+        +'<button class="lang-tab active" onclick="selectLang(\'ko\',this)">KO</button>'
+        +'<button class="lang-tab'+(data.today_poem_en?'':' lang-tab-off')+'" onclick="if(this.classList.contains(\'lang-tab-off\'))return;selectLang(\'en\',this)">EN</button>'
+        +'<button class="lang-tab'+(data.today_poem_ja?'':' lang-tab-off')+'" onclick="if(this.classList.contains(\'lang-tab-off\'))return;selectLang(\'ja\',this)">JP</button>'
+        +'<button class="lang-tab'+(data.today_poem_zh?'':' lang-tab-off')+'" onclick="if(this.classList.contains(\'lang-tab-off\'))return;selectLang(\'zh\',this)">ZH</button>'
+        +'</div>';
+      html += '<div class="section">'
+        +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">'
+        +'<div class="section-label" style="margin-bottom:0">✦ 오늘을 담은 시</div>'
+        +langTabsHtml
+        +'</div>'
+        +(data.genre?'<div style="text-align:center;margin-bottom:14px">'+genreBadge(data.genre)+'</div>':'')
+        +'<div class="rep-poem" id="poem-display">'+poemLinesHtml(data.today_poem)+'</div>'
+        +'</div>';
+    }
+
+    // Shot cards
+    var shotsHtml = '';
+    if(data.shots){
+      data.shots.forEach(function(s){
+        var imgBlock = s.image
+          ?'<div style="overflow:hidden"><img src="'+esc(s.image)+'" alt="SHOT '+s.index+'" class="shot-img" loading="lazy"></div>'
+          :'';
+        var poemBlock = '';
+        if(s.poem){
+          var pLines = s.poem.trim().split('\n').filter(function(l){return l.trim();}).map(function(l){return esc(l);}).join('<br>');
+          poemBlock = '<div class="shot-poem-wrap"><div class="shot-poem-inner">'
+            +(s.tone?'<div style="margin-bottom:8px">'+genreBadge(s.tone)+'</div>':'')
+            +'<div class="shot-poem-line">'+pLines+'</div>'
+            +'</div></div>';
+        }
+        shotsHtml += '<div class="shot-card">'+imgBlock
+          +'<div class="shot-body">'
+          +'<div class="shot-num">SHOT '+String(s.index).padStart(2,'0')+'</div>'
+          +(s.text?'<div class="shot-text">'+esc(s.text)+'</div>':'')
+          +poemBlock
+          +'</div></div>';
+      });
+    }
+
+    html += '<div class="section" style="padding-top:0">'
+      +'<div class="section-label">오늘의 사진들</div>'
+      +shotsHtml+'</div>';
+
+    // Last message
+    if(data.last_msg){
+      var toLabel = data.last_to ? 'To. '+data.last_to : '누군가에게 남기는 한 줄';
+      html += '<div class="last-msg">'
+        +'<div class="last-msg-to">'+esc(toLabel)+'</div>'
+        +'<div class="last-msg-text">'+esc(data.last_msg)+'</div>'
+        +'</div>';
+    }
+
+    // Share
+    html += '<div class="share-wrap">'
+      +'<div class="share-label">나의 미스토리 링크</div>'
+      +'<div class="share-url">'+pageUrl+'</div>'
+      +'<div class="share-btns">'
+      +'<button class="btn-kakao" onclick="doKakao()">'
+      +'<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><ellipse cx="9" cy="8" rx="8" ry="6.5" fill="#3C1E1E"/><path d="M5.5 10.5c.3.7 1 1.2 2 1.5l-.5 2 2-1.5c.3 0 .7.1 1 .1 3.3 0 6-2 6-4.5S12.3 3.5 9 3.5 3 5.5 3 8c0 1 .6 2 1.5 2.5z" fill="#FEE500"/></svg>'
+      +'KakaoTalk</button>'
+      +'<button class="btn-copy" onclick="doCopy()">🔗 링크 복사</button>'
+      +(hasImgs && data.today_poem?'<button id="play-btn" class="play-btn" onclick="togglePlay()">▶ 슬라이드쇼 재생</button>':'')
+      +'</div>'
+      +'<div class="share-tagline">매일을 담아보세요.<br>모으면 그것이 당신이에요.</div>'
+      +'</div>';
+
+    // 삭제 버튼 (CTA 위)
+    html += '<div style="text-align:center;padding:4px 40px 20px">'
+      +'<button onclick="doDelete()" style="background:none;border:none;font-size:13px;'
+      +'color:#e53e3e;cursor:pointer;font-family:inherit;font-weight:500;'
+      +'text-decoration:underline;text-underline-offset:3px;letter-spacing:.02em">'
+      +'이 기록 삭제</button>'
+      +'</div>';
+
+    // CTA
+    html += '<div class="cta-wrap">'
+      +'<div class="cta-sub">MESTORY</div>'
+      +'<div class="cta-title">오늘 당신의 하루도<br>이야기가 될 수 있어요</div>'
+      +'<div class="cta-desc">사진과 짧은 글 한 줄 · 무료 · AI가 기억할 글로 담아드립니다</div>'
+      +'<a href="https://mestory.art" class="cta-btn">나도 기록하기 →</a>'
+      +'</div>';
+
+    // Footer
+    html += '<div class="footer"><a href="https://mestory.art">mestory.art</a></div>';
+
+    document.getElementById('main').innerHTML = html;
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('main').style.display = 'block';
+
+    if(window.Kakao && !Kakao.isInitialized()){
+      Kakao.init('5b7821698a09c74f1d72c0b52165d557');
+    }
+  }
+
+  window.doKakao = function(){
+    if(!window.Kakao||!Kakao.isInitialized()){ doCopy(); return; }
+    var s = window._share||{};
+    Kakao.Share.sendDefault({
+      objectType:'feed',
+      content:{
+        title:'미스토리 — 나의 오늘, 나의 이야기',
+        description: s.desc||'',
+        imageUrl: s.img||'https://mestory.art/today-icon-512.png',
+        link:{ mobileWebUrl: s.url, webUrl: s.url },
+      },
+      buttons:[
+        {title:'이 기록 보기', link:{ mobileWebUrl: s.url, webUrl: s.url }},
+        {title:'나도 기록하기', link:{ mobileWebUrl:'https://mestory.art', webUrl:'https://mestory.art' }},
+      ],
+    });
+  };
+
+  window.doCopy = function(){
+    var url = pageUrl;
+    if(navigator.clipboard){
+      navigator.clipboard.writeText(url).then(function(){ alert('링크가 복사됐어요!\n카톡·인스타·명함에 붙여 담으세요'); });
+    } else {
+      var el=document.createElement('textarea'); el.value=url;
+      document.body.appendChild(el); el.select(); document.execCommand('copy');
+      document.body.removeChild(el);
+      alert('링크가 복사됐어요!\n카톡·인스타·명함에 붙여 담으세요');
+    }
+  };
+
+  function _getStoredEmail() {
+    try {
+      var e = localStorage.getItem('mestory_email');
+      if (e) return e;
+      var v = JSON.parse(localStorage.getItem('mestory_v1') || '{}');
+      return v.email || '';
+    } catch(e) { return ''; }
+  }
+
+  var _BTN = 'width:100%;padding:13px;border-radius:8px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;margin-bottom:8px;border:none;';
+  var _CANCEL = 'width:100%;padding:11px;border-radius:8px;font-size:13px;font-family:inherit;cursor:pointer;background:none;border:1px solid #ddd;color:#6b6050;';
+  var _INPUT = 'width:100%;padding:11px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;margin-bottom:12px;';
+
+  function _delBox(){ return document.getElementById('del-modal-box'); }
+  function _delModal(){ return document.getElementById('del-modal'); }
+
+  window.closeDeleteModal = function(){
+    var m = _delModal(); if(m) m.style.display = 'none';
+  };
+
+  window.doDelete = function(){
+    var savedEmail = _getStoredEmail();
+    _delBox().innerHTML =
+      '<div style="font-size:16px;font-weight:600;color:#2d2a22;margin-bottom:8px">기록 삭제</div>'
+      +'<div style="font-size:13px;color:#6b6050;line-height:1.75;margin-bottom:18px">'
+      +'작성 시 입력한 이메일로<br>인증 코드를 보내드릴게요.</div>'
+      +'<input id="del-email" type="email" autocomplete="email" placeholder="your@email.com"'
+      +' value="'+esc(savedEmail)+'" style="'+_INPUT+'">'
+      +'<button id="del-send-btn" onclick="doDeleteRequest()" style="'+_BTN+'background:#27500A;color:#EAF3DE">인증 코드 받기</button>'
+      +'<button onclick="closeDeleteModal()" style="'+_CANCEL+'">취소</button>';
+    _delModal().style.display = 'flex';
+    setTimeout(function(){ var i=document.getElementById('del-email'); if(i&&!savedEmail) i.focus(); }, 80);
+  };
+
+  window.doDeleteRequest = function(){
+    var emailEl = document.getElementById('del-email');
+    var email = emailEl ? emailEl.value.trim().toLowerCase() : '';
+    if(!email || !email.includes('@')){ alert('올바른 이메일 주소를 입력해주세요.'); return; }
+    var btn = document.getElementById('del-send-btn');
+    if(btn){ btn.textContent='발송 중...'; btn.disabled=true; }
+    fetch(SERVER+'/api/today/delete-request',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({doc_id: docId, email: email})
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(json){
+      if(json.ok){
+        _delShowCode(email);
+      } else if(json.error==='email_mismatch'){
+        alert('등록된 이메일과 다릅니다.');
+        if(btn){ btn.textContent='인증 코드 받기'; btn.disabled=false; }
+      } else {
+        alert('오류: '+(json.error||'알 수 없는 오류'));
+        if(btn){ btn.textContent='인증 코드 받기'; btn.disabled=false; }
+      }
+    })
+    .catch(function(){ alert('네트워크 오류가 발생했어요.'); if(btn){ btn.textContent='인증 코드 받기'; btn.disabled=false; } });
+  };
+
+  function _delShowCode(email){
+    _delBox().innerHTML =
+      '<div style="font-size:16px;font-weight:600;color:#2d2a22;margin-bottom:8px">인증 코드 입력</div>'
+      +'<div style="font-size:13px;color:#6b6050;line-height:1.75;margin-bottom:18px">'
+      +esc(email)+'<br>위 주소로 6자리 코드를 보냈어요.'
+      +'<br><span style="font-size:11px;color:#9e8250">10분 이내 입력해주세요</span></div>'
+      +'<input id="del-code" type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="6"'
+      +' placeholder="123456" style="'+_INPUT+'font-size:22px;text-align:center;letter-spacing:.35em">'
+      +'<button id="del-confirm-btn" onclick="doDeleteConfirm()" style="'+_BTN+'background:#c0392b;color:#fff">삭제 확인</button>'
+      +'<button onclick="closeDeleteModal()" style="'+_CANCEL+'">취소</button>';
+    setTimeout(function(){ var i=document.getElementById('del-code'); if(i) i.focus(); }, 80);
+  }
+
+  window.doDeleteConfirm = function(){
+    var codeEl = document.getElementById('del-code');
+    var code = codeEl ? codeEl.value.trim() : '';
+    if(code.length < 6){ alert('6자리 코드를 입력해주세요.'); return; }
+    var btn = document.getElementById('del-confirm-btn');
+    if(btn){ btn.textContent='삭제 중...'; btn.disabled=true; }
+    fetch(SERVER+'/api/today/delete-confirm',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({doc_id: docId, code: code})
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(json){
+      if(json.ok){
+        closeDeleteModal();
+        alert('기록이 삭제됐어요.');
+        window.location.href = 'https://mestory.art';
+      } else if(json.error==='wrong_code'){
+        alert('인증 코드가 올바르지 않아요.');
+        if(btn){ btn.textContent='삭제 확인'; btn.disabled=false; }
+      } else if(json.error==='expired'){
+        alert('인증 코드가 만료됐어요.\n처음부터 다시 시도해주세요.');
+        closeDeleteModal();
+      } else {
+        alert('오류: '+(json.error||'알 수 없는 오류'));
+        if(btn){ btn.textContent='삭제 확인'; btn.disabled=false; }
+      }
+    })
+    .catch(function(){ alert('네트워크 오류가 발생했어요.'); if(btn){ btn.textContent='삭제 확인'; btn.disabled=false; } });
+  };
+})();
+</script>
+</body>
+</html>
