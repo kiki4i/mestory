@@ -284,7 +284,17 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
               }).join('')
             + '</div>'
           );
-          _slideTimer = setTimeout(function(){ _stopSlideshow(); }, 5000);
+          _slideTimer = setTimeout(function(){
+            if(!_isPlaying) return;
+            _ssShowText(
+              '<div style="color:rgba(200,169,110,.65);font-size:10px;letter-spacing:.3em;margin-bottom:22px">MESTORY</div>'
+              + (nick ? '<div style="font-family:Georgia,serif;font-size:30px;color:#f9f6f0;font-weight:300;margin-bottom:10px">' + esc(nick) + '</div>' : '')
+              + (date ? '<div style="font-size:13px;color:rgba(249,246,240,.4);margin-bottom:26px">' + esc(date) + '</div>' : '')
+              + '<div style="font-size:15px;color:rgba(200,169,110,.85);letter-spacing:.08em">' + introLabel + '</div>'
+            );
+            _updateDots(imgs.length, 0);
+            _slideTimer = setTimeout(function(){ showPhoto(0); }, 1500);
+          }, 5000);
         }
       }
       showPhoto(0);
