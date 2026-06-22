@@ -383,7 +383,7 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
 
   if (!docId) { showError(); return; }
 
-  var pageUrl = 'https://mestory.art/today-result.html?id=' + encodeURIComponent(docId);
+  var pageUrl = 'https://share.mestory.art/today/' + encodeURIComponent(docId);
 
   fetch(SERVER + '/api/today/data/' + encodeURIComponent(docId))
     .then(function(r){ return r.ok ? r.json() : Promise.reject(r.status); })
