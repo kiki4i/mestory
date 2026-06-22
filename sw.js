@@ -1,5 +1,5 @@
 // mestory.art Service Worker
-const CACHE_NAME = 'mestory-v1';
+const CACHE_NAME = 'mestory-v3';
 const ASSETS = [
   '/',
   '/today.html',
