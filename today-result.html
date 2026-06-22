@@ -453,7 +453,7 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     // Shot cards (먼저)
     var shotsHtml = '';
     if(data.shots){
-      data.shots.forEach(function(s){
+      data.shots.forEach(function(s,_si){
         var imgBlock = s.image
           ?'<div style="overflow:hidden"><img src="'+esc(s.image)+'" alt="SHOT '+s.index+'" class="shot-img" loading="lazy"></div>'
           :'';
@@ -462,7 +462,7 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
           var pLines = s.poem.trim().split('\n').filter(function(l){return l.trim();}).map(function(l){return esc(l);}).join('<br>');
           poemBlock = '<div class="shot-poem-wrap"><div class="shot-poem-inner">'
             +(s.tone?'<div style="margin-bottom:8px">'+genreBadge(s.tone)+'</div>':'')
-            +'<div class="shot-poem-line">'+pLines+'</div>'
+            +'<div class="shot-poem-line" data-idx="'+_si+'">'+pLines+'</div>'
             +'</div></div>';
         }
         shotsHtml += '<div class="shot-card">'+imgBlock
