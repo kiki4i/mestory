@@ -102,6 +102,12 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
   </div>
 </div>
 
+<div id="del-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;
+  z-index:9998;background:rgba(0,0,0,.52);align-items:center;justify-content:center;padding:20px">
+  <div id="del-modal-box" style="background:#fff;border-radius:14px;padding:28px 22px;
+    width:100%;max-width:320px;box-sizing:border-box"></div>
+</div>
+
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" integrity="sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4" crossorigin="anonymous"></script>
 <script>
 (function(){
@@ -522,32 +528,97 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     } catch(e) { return ''; }
   }
 
-  window.doDelete = function() {
-    var email = _getStoredEmail();
-    if (!email) {
-      email = prompt('작성 시 입력한 이메일 주소를 입력해주세요.\n(본인 확인용)');
-      if (!email) return;
-      email = email.trim().toLowerCase();
-      if (!email.includes('@')) { alert('올바른 이메일 주소를 입력해주세요.'); return; }
-    }
-    if (!confirm('이 기록을 삭제하시겠어요?\n삭제 후 복구할 수 없습니다.')) return;
-    fetch(SERVER + '/api/today/delete', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+  var _BTN = 'width:100%;padding:13px;border-radius:8px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;margin-bottom:8px;border:none;';
+  var _CANCEL = 'width:100%;padding:11px;border-radius:8px;font-size:13px;font-family:inherit;cursor:pointer;background:none;border:1px solid #ddd;color:#6b6050;';
+  var _INPUT = 'width:100%;padding:11px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;margin-bottom:12px;';
+
+  function _delBox(){ return document.getElementById('del-modal-box'); }
+  function _delModal(){ return document.getElementById('del-modal'); }
+
+  window.closeDeleteModal = function(){
+    var m = _delModal(); if(m) m.style.display = 'none';
+  };
+
+  window.doDelete = function(){
+    var savedEmail = _getStoredEmail();
+    _delBox().innerHTML =
+      '<div style="font-size:16px;font-weight:600;color:#2d2a22;margin-bottom:8px">기록 삭제</div>'
+      +'<div style="font-size:13px;color:#6b6050;line-height:1.75;margin-bottom:18px">'
+      +'작성 시 입력한 이메일로<br>인증 코드를 보내드릴게요.</div>'
+      +'<input id="del-email" type="email" autocomplete="email" placeholder="your@email.com"'
+      +' value="'+esc(savedEmail)+'" style="'+_INPUT+'">'
+      +'<button id="del-send-btn" onclick="doDeleteRequest()" style="'+_BTN+'background:#27500A;color:#EAF3DE">인증 코드 받기</button>'
+      +'<button onclick="closeDeleteModal()" style="'+_CANCEL+'">취소</button>';
+    _delModal().style.display = 'flex';
+    setTimeout(function(){ var i=document.getElementById('del-email'); if(i&&!savedEmail) i.focus(); }, 80);
+  };
+
+  window.doDeleteRequest = function(){
+    var emailEl = document.getElementById('del-email');
+    var email = emailEl ? emailEl.value.trim().toLowerCase() : '';
+    if(!email || !email.includes('@')){ alert('올바른 이메일 주소를 입력해주세요.'); return; }
+    var btn = document.getElementById('del-send-btn');
+    if(btn){ btn.textContent='발송 중...'; btn.disabled=true; }
+    fetch(SERVER+'/api/today/delete-request',{
+      method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({doc_id: docId, email: email})
     })
     .then(function(r){ return r.json(); })
     .then(function(json){
-      if (json.ok) {
-        alert('기록이 삭제됐어요.');
-        window.location.href = 'https://mestory.art';
-      } else if (json.error === 'unauthorized') {
-        alert('작성자 이메일과 일치하지 않아요.\n기록을 만들 때 사용한 이메일로 다시 시도해주세요.');
+      if(json.ok){
+        _delShowCode(email);
+      } else if(json.error==='email_mismatch'){
+        alert('등록된 이메일과 다릅니다.');
+        if(btn){ btn.textContent='인증 코드 받기'; btn.disabled=false; }
       } else {
-        alert('삭제 중 오류가 발생했어요: ' + (json.error || '알 수 없는 오류'));
+        alert('오류: '+(json.error||'알 수 없는 오류'));
+        if(btn){ btn.textContent='인증 코드 받기'; btn.disabled=false; }
       }
     })
-    .catch(function(){ alert('네트워크 오류가 발생했어요. 다시 시도해주세요.'); });
+    .catch(function(){ alert('네트워크 오류가 발생했어요.'); if(btn){ btn.textContent='인증 코드 받기'; btn.disabled=false; } });
+  };
+
+  function _delShowCode(email){
+    _delBox().innerHTML =
+      '<div style="font-size:16px;font-weight:600;color:#2d2a22;margin-bottom:8px">인증 코드 입력</div>'
+      +'<div style="font-size:13px;color:#6b6050;line-height:1.75;margin-bottom:18px">'
+      +esc(email)+'<br>위 주소로 6자리 코드를 보냈어요.'
+      +'<br><span style="font-size:11px;color:#9e8250">10분 이내 입력해주세요</span></div>'
+      +'<input id="del-code" type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="6"'
+      +' placeholder="123456" style="'+_INPUT+'font-size:22px;text-align:center;letter-spacing:.35em">'
+      +'<button id="del-confirm-btn" onclick="doDeleteConfirm()" style="'+_BTN+'background:#c0392b;color:#fff">삭제 확인</button>'
+      +'<button onclick="closeDeleteModal()" style="'+_CANCEL+'">취소</button>';
+    setTimeout(function(){ var i=document.getElementById('del-code'); if(i) i.focus(); }, 80);
+  }
+
+  window.doDeleteConfirm = function(){
+    var codeEl = document.getElementById('del-code');
+    var code = codeEl ? codeEl.value.trim() : '';
+    if(code.length < 6){ alert('6자리 코드를 입력해주세요.'); return; }
+    var btn = document.getElementById('del-confirm-btn');
+    if(btn){ btn.textContent='삭제 중...'; btn.disabled=true; }
+    fetch(SERVER+'/api/today/delete-confirm',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({doc_id: docId, code: code})
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(json){
+      if(json.ok){
+        closeDeleteModal();
+        alert('기록이 삭제됐어요.');
+        window.location.href = 'https://mestory.art';
+      } else if(json.error==='wrong_code'){
+        alert('인증 코드가 올바르지 않아요.');
+        if(btn){ btn.textContent='삭제 확인'; btn.disabled=false; }
+      } else if(json.error==='expired'){
+        alert('인증 코드가 만료됐어요.\n처음부터 다시 시도해주세요.');
+        closeDeleteModal();
+      } else {
+        alert('오류: '+(json.error||'알 수 없는 오류'));
+        if(btn){ btn.textContent='삭제 확인'; btn.disabled=false; }
+      }
+    })
+    .catch(function(){ alert('네트워크 오류가 발생했어요.'); if(btn){ btn.textContent='삭제 확인'; btn.disabled=false; } });
   };
 })();
 </script>
