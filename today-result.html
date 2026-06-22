@@ -77,6 +77,13 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
 </style>
 </head>
 <body>
+<div id="lang-bar" style="position:fixed;top:10px;right:12px;z-index:9999;display:flex;gap:4px;">
+  <button class="lang-tab active" onclick="selectLang('ko',this)">KO</button>
+  <button class="lang-tab" onclick="selectLang('en',this)">EN</button>
+  <button class="lang-tab" onclick="selectLang('ja',this)">JP</button>
+  <button class="lang-tab" onclick="selectLang('zh',this)">ZH</button>
+</div>
+
 <div id="loading">
   <div style="display:flex;gap:6px">
     <span class="dot"></span><span class="dot"></span><span class="dot"></span>
