@@ -167,17 +167,21 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
       return;
     }
     poemEl.innerHTML = '<div style="font-size:12px;color:#aaa;padding:8px 0">번역 중...</div>';
+    var langMap = {en:'en', ja:'jp', zh:'zh'};
     fetch(SERVER + '/api/translate', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({text: _currentData.today_poem, target_lang: lang})
+      body: JSON.stringify({lang: langMap[lang]||lang, texts: {poem: _currentData.today_poem}})
     }).then(function(r){ return r.ok ? r.json() : Promise.reject(); })
       .then(function(j){
-        if(j.translated){
-          if(lang==='en') _currentData.today_poem_en = j.translated;
-          if(lang==='ja') _currentData.today_poem_ja = j.translated;
-          if(lang==='zh') _currentData.today_poem_zh = j.translated;
-          poemEl.innerHTML = poemBodyHtml(j.translated);
+        var translated = j.translations && j.translations.poem;
+        if(translated){
+          if(lang==='en') _currentData.today_poem_en = translated;
+          if(lang==='ja') _currentData.today_poem_ja = translated;
+          if(lang==='zh') _currentData.today_poem_zh = translated;
+          poemEl.innerHTML = poemBodyHtml(translated);
+        } else {
+          poemEl.innerHTML = poemBodyHtml(_currentData.today_poem);
         }
       })
       .catch(function(){ poemEl.innerHTML = poemBodyHtml(_currentData.today_poem); });
