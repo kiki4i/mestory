@@ -138,20 +138,20 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     var intro = '';
     if (lang === 'ko') {
       intro = nick
-        ? nick + '님의 ' + (date ? date + ' ' : '') + '오늘을 담은 시. '
-        : '오늘을 담은 시. ';
+        ? nick + '님의 ' + (date ? date + ' ' : '') + '오늘을 담은 시... '
+        : '오늘을 담은 시... ';
     } else if (lang === 'en') {
       intro = nick
-        ? 'A poem for ' + nick + (date ? ', ' + date : '') + '. '
-        : 'A poem for today. ';
+        ? 'A poem for ' + nick + (date ? ', ' + date : '') + '... '
+        : 'A poem for today... ';
     } else if (lang === 'ja') {
       intro = nick
-        ? nick + 'さんの' + (date ? date + 'の' : '') + '今日を詠んだ詩。'
-        : '今日を詠んだ詩。';
+        ? nick + 'さんの' + (date ? date + 'の' : '') + '今日を詠んだ詩…'
+        : '今日を詠んだ詩…';
     } else if (lang === 'zh') {
       intro = nick
-        ? nick + '的' + (date ? date + '的' : '') + '今日之诗。'
-        : '今日之诗。';
+        ? nick + '的' + (date ? date + '的' : '') + '今日之诗…'
+        : '今日之诗…';
     }
     return intro + poem;
   }
