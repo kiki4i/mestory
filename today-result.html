@@ -419,25 +419,7 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
       +(data.created_at?'<div class="hero-date">'+esc(data.created_at)+'</div>':'')
       +'</div>';
 
-    // Today poem
-    if(data.today_poem){
-      var langTabsHtml = '<div class="lang-tabs">'
-        +'<button class="lang-tab active" onclick="selectLang(\'ko\',this)">KO</button>'
-        +'<button class="lang-tab'+''+'" onclick="if(this.classList.contains(\'lang-tab-off\'))return;selectLang(\'en\',this)">EN</button>'
-        +'<button class="lang-tab'+''+'" onclick="if(this.classList.contains(\'lang-tab-off\'))return;selectLang(\'ja\',this)">JP</button>'
-        +'<button class="lang-tab'+''+'" onclick="if(this.classList.contains(\'lang-tab-off\'))return;selectLang(\'zh\',this)">ZH</button>'
-        +'</div>';
-      html += '<div class="section">'
-        +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">'
-        +'<div class="section-label" style="margin-bottom:0">✦ 오늘을 담은 시</div>'
-        +langTabsHtml
-        +'</div>'
-        +(data.genre?'<div style="text-align:center;margin-bottom:14px">'+genreBadge(data.genre)+'</div>':'')
-        +'<div class="rep-poem" id="poem-display">'+poemLinesHtml(data.today_poem)+'</div>'
-        +'</div>';
-    }
-
-    // Shot cards
+    // Shot cards (먼저)
     var shotsHtml = '';
     if(data.shots){
       data.shots.forEach(function(s){
@@ -464,6 +446,15 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     html += '<div class="section" style="padding-top:0">'
       +'<div class="section-label">오늘의 사진들</div>'
       +shotsHtml+'</div>';
+
+    // Today poem (마지막)
+    if(data.today_poem){
+      html += '<div class="section">'
+        +'<div class="section-label">✦ 오늘을 담은 시</div>'
+        +(data.genre?'<div style="text-align:center;margin-bottom:14px">'+genreBadge(data.genre)+'</div>':'')
+        +'<div class="rep-poem" id="poem-display">'+poemLinesHtml(data.today_poem)+'</div>'
+        +'</div>';
+    }
 
     // Last message
     if(data.last_msg){
