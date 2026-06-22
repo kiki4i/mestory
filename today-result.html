@@ -455,6 +455,14 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
       +'<div class="share-tagline">매일을 담아보세요.<br>모으면 그것이 당신이에요.</div>'
       +'</div>';
 
+    // 삭제 버튼 (CTA 위)
+    html += '<div style="text-align:center;padding:4px 40px 20px">'
+      +'<button onclick="doDelete()" style="background:none;border:none;font-size:12px;'
+      +'color:rgba(160,120,80,.55);cursor:pointer;font-family:inherit;'
+      +'text-decoration:underline;text-underline-offset:3px;letter-spacing:.02em">'
+      +'이 기록 삭제</button>'
+      +'</div>';
+
     // CTA
     html += '<div class="cta-wrap">'
       +'<div class="cta-sub">MESTORY</div>'
@@ -503,6 +511,43 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
       document.body.removeChild(el);
       alert('링크가 복사됐어요!\n카톡·인스타·명함에 붙여 담으세요');
     }
+  };
+
+  function _getStoredEmail() {
+    try {
+      var e = localStorage.getItem('mestory_email');
+      if (e) return e;
+      var v = JSON.parse(localStorage.getItem('mestory_v1') || '{}');
+      return v.email || '';
+    } catch(e) { return ''; }
+  }
+
+  window.doDelete = function() {
+    var email = _getStoredEmail();
+    if (!email) {
+      email = prompt('작성 시 입력한 이메일 주소를 입력해주세요.\n(본인 확인용)');
+      if (!email) return;
+      email = email.trim().toLowerCase();
+      if (!email.includes('@')) { alert('올바른 이메일 주소를 입력해주세요.'); return; }
+    }
+    if (!confirm('이 기록을 삭제하시겠어요?\n삭제 후 복구할 수 없습니다.')) return;
+    fetch(SERVER + '/api/today/delete', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({doc_id: docId, email: email})
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(json){
+      if (json.ok) {
+        alert('기록이 삭제됐어요.');
+        window.location.href = 'https://mestory.art';
+      } else if (json.error === 'unauthorized') {
+        alert('작성자 이메일과 일치하지 않아요.\n기록을 만들 때 사용한 이메일로 다시 시도해주세요.');
+      } else {
+        alert('삭제 중 오류가 발생했어요: ' + (json.error || '알 수 없는 오류'));
+      }
+    })
+    .catch(function(){ alert('네트워크 오류가 발생했어요. 다시 시도해주세요.'); });
   };
 })();
 </script>
