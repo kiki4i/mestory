@@ -162,7 +162,7 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
       return;
     }
     var cached = _getPoem(_currentData, lang);
-    if (cached) {
+    if (cached && cached !== _currentData.today_poem) {
       poemEl.innerHTML = poemBodyHtml(cached);
       return;
     }
