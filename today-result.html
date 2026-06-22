@@ -66,10 +66,14 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
 .lang-tab-off{opacity:.35;cursor:not-allowed}
 .play-btn{padding:10px 28px;background:#27500A;border:none;border-radius:20px;font-size:13px;color:#EAF3DE;cursor:pointer;font-family:inherit;letter-spacing:.05em;transition:opacity .15s}
 .play-btn:disabled{opacity:.5;cursor:default}
-#slideshow-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;background:#0a0a0a;flex-direction:column;align-items:center;justify-content:center;padding:24px}
-#slideshow-img{max-width:100%;max-height:78vh;object-fit:contain;border-radius:4px}
-#slideshow-dots{margin-top:14px;display:flex;gap:6px;align-items:center;min-height:10px}
-#slideshow-stop-btn{margin-top:18px;padding:8px 28px;background:transparent;border:1px solid rgba(200,169,110,.5);border-radius:20px;color:rgba(200,169,110,.8);font-size:13px;cursor:pointer;font-family:inherit}
+#slideshow-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;background:#0a0a0a;flex-direction:column;align-items:stretch}
+#ss-stage{position:relative;flex:1;background:#000;overflow:hidden;display:flex;align-items:center;justify-content:center;min-height:0}
+.ss-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s ease}
+#ss-caption{position:absolute;bottom:0;left:0;right:0;padding:48px 24px 22px;background:linear-gradient(transparent,rgba(0,0,0,.75));color:#fff;font-size:14px;line-height:1.75;text-align:center;opacity:0;transition:opacity .5s ease;pointer-events:none}
+#ss-text-screen{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;padding:48px 36px;text-align:center;background:#0a0a0a;opacity:0;transition:opacity .8s ease}
+#ss-footer{display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px 0 22px;background:#0a0a0a;flex-shrink:0}
+#slideshow-dots{display:flex;gap:6px;align-items:center;min-height:8px}
+#slideshow-stop-btn{padding:8px 28px;background:transparent;border:1px solid rgba(200,169,110,.5);border-radius:20px;color:rgba(200,169,110,.8);font-size:13px;cursor:pointer;font-family:inherit}
 </style>
 </head>
 <body>
@@ -86,9 +90,16 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
 <div class="wrap" id="main" style="display:none"></div>
 
 <div id="slideshow-overlay">
-  <img id="slideshow-img" src="" alt="">
-  <div id="slideshow-dots"></div>
-  <button id="slideshow-stop-btn" onclick="window.stopSlideshow()">■ 정지</button>
+  <div id="ss-stage">
+    <img id="ss-img-a" class="ss-img" alt="">
+    <img id="ss-img-b" class="ss-img" alt="">
+    <div id="ss-caption"></div>
+    <div id="ss-text-screen"></div>
+  </div>
+  <div id="ss-footer">
+    <div id="slideshow-dots"></div>
+    <button id="slideshow-stop-btn" onclick="window.stopSlideshow()">■ 정지</button>
+  </div>
 </div>
 
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" integrity="sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4" crossorigin="anonymous"></script>
@@ -105,6 +116,11 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
   var _slideTimer = null;
   var _isPlaying = false;
   var _currentData = null;
+  var _bgmAudio = null;
+  var _ssActiveImg = 'a';
+  var _captionTimer = null;
+  // 무료 피아노 BGM (Pixabay License) — 필요 시 다른 URL로 교체 가능
+  var BGM_URL = 'https://cdn.pixabay.com/audio/2022/01/18/audio_d0c6ff1bef.mp3';
 
   function _getPoem(data, lang) {
     var map = {
@@ -176,53 +192,151 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
   function _stopSlideshow() {
     _isPlaying = false;
     if(_slideTimer){ clearTimeout(_slideTimer); _slideTimer = null; }
+    if(_captionTimer){ clearTimeout(_captionTimer); _captionTimer = null; }
     if(_audioSource){ try{ _audioSource.stop(); }catch(e){} _audioSource = null; }
     if(_audioCtx){ _audioCtx.close(); _audioCtx = null; }
+    if(_bgmAudio){ _bgmAudio.pause(); _bgmAudio.currentTime = 0; _bgmAudio = null; }
     var ov = document.getElementById('slideshow-overlay');
     if(ov) ov.style.display = 'none';
     var btn = document.getElementById('play-btn');
-    if(btn){ btn.textContent = '▶ 재생 + 낭독'; btn.disabled = false; }
+    if(btn){ btn.textContent = '▶ 슬라이드쇼 재생'; btn.disabled = false; }
   }
   window.stopSlideshow = _stopSlideshow;
 
+  // 사진 크로스페이드 전환 + 캡션 페이드인
+  function _ssCrossfadeTo(url, captionText) {
+    var next = _ssActiveImg === 'a' ? 'b' : 'a';
+    var nextEl = document.getElementById('ss-img-' + next);
+    var prevEl = document.getElementById('ss-img-' + _ssActiveImg);
+    var cap = document.getElementById('ss-caption');
+    var ts  = document.getElementById('ss-text-screen');
+    if(cap) cap.style.opacity = '0';
+    if(_captionTimer){ clearTimeout(_captionTimer); _captionTimer = null; }
+    // 텍스트 화면이 열려 있으면 같이 페이드아웃
+    if(ts && ts.style.display !== 'none'){
+      ts.style.opacity = '0';
+      setTimeout(function(){ ts.style.display = 'none'; }, 820);
+    }
+    var preload = new Image();
+    preload.onload = preload.onerror = function(){
+      nextEl.src = url;
+      nextEl.getBoundingClientRect(); // force reflow
+      nextEl.style.opacity = '1';
+      prevEl.style.opacity = '0';
+      _ssActiveImg = next;
+      if(cap && captionText){
+        _captionTimer = setTimeout(function(){
+          cap.textContent = captionText;
+          cap.style.opacity = '1';
+        }, 500);
+      }
+    };
+    preload.src = url;
+  }
+
+  // 어두운 배경 텍스트 화면 표시 (인트로 / 아웃로)
+  function _ssShowText(innerHtml) {
+    var ts = document.getElementById('ss-text-screen');
+    var a  = document.getElementById('ss-img-a');
+    var b  = document.getElementById('ss-img-b');
+    var cap = document.getElementById('ss-caption');
+    if(a) a.style.opacity = '0';
+    if(b) b.style.opacity = '0';
+    if(cap){ cap.style.opacity = '0'; cap.textContent = ''; }
+    _ssActiveImg = 'a';
+    ts.innerHTML = innerHtml;
+    ts.style.opacity = '0';
+    ts.style.display = 'flex';
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){ ts.style.opacity = '1'; });
+    });
+  }
+
   function _startSlideshow(audioB64, imgs) {
     _isPlaying = true;
+    // 상태 초기화
+    var ts = document.getElementById('ss-text-screen');
+    if(ts){ ts.style.opacity = '0'; ts.style.display = 'none'; ts.innerHTML = ''; }
+    var a = document.getElementById('ss-img-a'), b = document.getElementById('ss-img-b');
+    if(a){ a.style.opacity = '0'; a.src = ''; }
+    if(b){ b.style.opacity = '0'; b.src = ''; }
+    _ssActiveImg = 'a';
+
     var btn = document.getElementById('play-btn');
     if(btn){ btn.textContent = '■ 정지'; btn.disabled = false; }
 
     var ov = document.getElementById('slideshow-overlay');
-    var imgEl = document.getElementById('slideshow-img');
-    if(ov && imgEl){ imgEl.src = imgs[0]; ov.style.display = 'flex'; }
+    if(ov) ov.style.display = 'flex';
+
+    // 캡션 배열 (shot.text)
+    var captions = imgs.map(function(url){
+      var shots = (_currentData && _currentData.shots) || [];
+      for(var j = 0; j < shots.length; j++){
+        if(shots[j].image === url) return shots[j].text || '';
+      }
+      return '';
+    });
+
+    // BGM 시작
+    if(_bgmAudio){ try{ _bgmAudio.pause(); }catch(e){} }
+    _bgmAudio = new Audio(BGM_URL);
+    _bgmAudio.loop = true;
+    _bgmAudio.volume = 0.3;
+    _bgmAudio.play().catch(function(){});
+
+    // 인트로 화면 표시
+    var nick = (_currentData && _currentData.nickname) || '';
+    var date = _currentData ? _formatDate(_currentData.created_at, _ttsLang) : '';
+    var introLabel = {ko:'오늘을 담은 시', en:'A Poem for Today', ja:'今日を詠んだ詩', zh:'今日之诗'}[_ttsLang] || '오늘을 담은 시';
+    _ssShowText(
+      '<div style="color:rgba(200,169,110,.65);font-size:10px;letter-spacing:.3em;margin-bottom:22px">MESTORY</div>'
+      + (nick ? '<div style="font-family:Georgia,serif;font-size:30px;color:#f9f6f0;font-weight:300;margin-bottom:10px">' + esc(nick) + '</div>' : '')
+      + (date ? '<div style="font-size:13px;color:rgba(249,246,240,.4);margin-bottom:26px">' + esc(date) + '</div>' : '')
+      + '<div style="font-size:15px;color:rgba(200,169,110,.85);letter-spacing:.08em">' + introLabel + '</div>'
+    );
     _updateDots(imgs.length, 0);
 
+    // TTS 오디오 디코딩
     var raw = atob(audioB64);
     var buf = new ArrayBuffer(raw.length);
     var view = new Uint8Array(buf);
-    for(var i=0;i<raw.length;i++) view[i] = raw.charCodeAt(i);
+    for(var i = 0; i < raw.length; i++) view[i] = raw.charCodeAt(i);
 
     _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     _audioCtx.decodeAudioData(buf, function(decoded){
-      _audioSource = _audioCtx.createBufferSource();
-      _audioSource.buffer = decoded;
-      _audioSource.connect(_audioCtx.destination);
+      var totalDur = decoded.duration;
+      var introDur = 1.5;
+      var photoDur = Math.max(3000, ((totalDur - introDur) / imgs.length) * 1000);
 
-      var duration = decoded.duration;
-      var interval = (duration / imgs.length) * 1000;
-      var idx = 0;
+      // 인트로 1.5초 후 TTS 시작 + 사진 전환
+      _slideTimer = setTimeout(function(){
+        _audioSource = _audioCtx.createBufferSource();
+        _audioSource.buffer = decoded;
+        _audioSource.connect(_audioCtx.destination);
+        _audioSource.onended = function(){ _stopSlideshow(); };
+        _audioSource.start(0);
 
-      function advance(){
-        idx++;
-        if(idx < imgs.length){
-          var el = document.getElementById('slideshow-img');
-          if(el) el.src = imgs[idx];
-          _updateDots(imgs.length, idx);
-          _slideTimer = setTimeout(advance, interval);
+        var photoIdx = 0;
+        function showPhoto(idx){
+          if(!_isPlaying) return;
+          if(idx < imgs.length){
+            _ssCrossfadeTo(imgs[idx], captions[idx]);
+            _updateDots(imgs.length, idx);
+            _slideTimer = setTimeout(function(){ showPhoto(idx + 1); }, photoDur);
+          } else {
+            // 아웃로: 시 전체 본문
+            var pLines = _getPoem(_currentData, _ttsLang).trim().split('\n').filter(function(l){ return l.trim(); });
+            _ssShowText(
+              '<div style="max-width:340px">'
+              + pLines.map(function(l){
+                  return '<div style="font-family:Georgia,serif;font-size:18px;color:#f9f6f0;line-height:2.1;letter-spacing:.02em">' + esc(l) + '</div>';
+                }).join('')
+              + '</div>'
+            );
+          }
         }
-      }
-      _slideTimer = setTimeout(advance, interval);
-
-      _audioSource.onended = function(){ _stopSlideshow(); };
-      _audioSource.start(0);
+        showPhoto(0);
+      }, introDur * 1000);
     }, function(){
       _stopSlideshow();
       alert('오디오 디코딩 오류가 발생했습니다.');
@@ -259,7 +373,7 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
       _startSlideshow(json.audio, imgs);
     })
     .catch(function(e){
-      if(btn){ btn.textContent = '▶ 재생 + 낭독'; btn.disabled = false; }
+      if(btn){ btn.textContent = '▶ 슬라이드쇼 재생'; btn.disabled = false; }
       alert('TTS 오류: ' + (e.message || '알 수 없는 오류'));
     });
   };
@@ -397,7 +511,7 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
       +'<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><ellipse cx="9" cy="8" rx="8" ry="6.5" fill="#3C1E1E"/><path d="M5.5 10.5c.3.7 1 1.2 2 1.5l-.5 2 2-1.5c.3 0 .7.1 1 .1 3.3 0 6-2 6-4.5S12.3 3.5 9 3.5 3 5.5 3 8c0 1 .6 2 1.5 2.5z" fill="#FEE500"/></svg>'
       +'KakaoTalk</button>'
       +'<button class="btn-copy" onclick="doCopy()">🔗 링크 복사</button>'
-      +(hasImgs && data.today_poem?'<button id="play-btn" class="play-btn" onclick="togglePlay()">▶ 재생 + 낭독</button>':'')
+      +(hasImgs && data.today_poem?'<button id="play-btn" class="play-btn" onclick="togglePlay()">▶ 슬라이드쇼 재생</button>':'')
       +'</div>'
       +'<div class="share-tagline">매일을 담아보세요.<br>모으면 그것이 당신이에요.</div>'
       +'</div>';
