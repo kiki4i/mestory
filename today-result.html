@@ -517,7 +517,7 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
         html += '<div class="tomorrow-q">'+esc(data.tomorrow_question)+'</div>';
       }
       if(data.today_word){
-        html += '<div class="today-word">'+esc(data.today_word)+'</div>';
+        html += '<div class="today-word"><span style="font-size:10px;letter-spacing:.15em;color:rgba(200,169,110,.45);display:block;margin-bottom:6px">오늘을 표현한 한 마디</span>'+esc(data.today_word)+'</div>';
       }
       html += '</div>';
     }
