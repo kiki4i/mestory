@@ -41,6 +41,10 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
 .last-msg{margin:40px 0;padding:24px 28px;border-left:3px solid #c8a96e;background:#faf7f2}
 .last-msg-to{font-size:11px;color:#9e8250;letter-spacing:.1em;margin-bottom:10px}
 .last-msg-text{font-size:18px;color:#2d2a22;font-style:italic;line-height:1.8}
+.reflection-wrap{margin:0;padding:32px 40px;background:#0f0d09;text-align:center}
+.reflection-label{font-size:10px;color:rgba(200,169,110,.45);letter-spacing:.2em;margin-bottom:16px}
+.reflection-text{font-size:17px;color:#f5f0e8;line-height:1.9;font-style:italic;margin-bottom:24px}
+.tomorrow-q{display:inline-block;padding:12px 22px;border:1px solid rgba(200,169,110,.35);border-radius:24px;font-size:13px;color:rgba(200,169,110,.85);line-height:1.7}
 .share-wrap{background:#faf7f2;padding:24px 40px;border-top:1px solid #e5dece;text-align:center}
 .share-label{font-size:11px;color:#9e8250;letter-spacing:.1em;margin-bottom:8px}
 .share-url{font-size:12px;color:#6b6050;margin-bottom:14px;word-break:break-all}
@@ -499,6 +503,19 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
         +'<div class="last-msg-to">'+esc(toLabel)+'</div>'
         +'<div class="last-msg-text">'+esc(data.last_msg)+'</div>'
         +'</div>';
+    }
+
+    // Reflection
+    if(data.reflection || data.tomorrow_question){
+      html += '<div class="reflection-wrap">'
+        +'<div class="reflection-label">오늘의 기록</div>';
+      if(data.reflection){
+        html += '<div class="reflection-text">'+esc(data.reflection)+'</div>';
+      }
+      if(data.tomorrow_question){
+        html += '<div class="tomorrow-q">'+esc(data.tomorrow_question)+'</div>';
+      }
+      html += '</div>';
     }
 
     // Share
