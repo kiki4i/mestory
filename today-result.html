@@ -556,27 +556,6 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
       html += '</div>';
     }
 
-    // Capsule - open (past message)
-    var today = new Date().toISOString().slice(0,10);
-    if(data.time_capsule && data.capsule_open_date && data.capsule_open_date <= today){
-      var capDate = data.created_at ? data.created_at.slice(0,10) : '';
-      html += '<div class="capsule-open">'
-        +'<div class="capsule-open-label">📬 1년 전의 내가 남긴 말</div>'
-        +'<div class="capsule-open-msg">"'+esc(data.time_capsule)+'"</div>'
-        +(capDate?'<div class="capsule-open-date">— '+capDate+' 의 나</div>':'')
-        +'</div>';
-    }
-
-    // Capsule - write (new message)
-    if(!data.time_capsule){
-      html += '<div class="capsule-wrap">'
-        +'<div class="capsule-label">1년 뒤의 나에게 한 마디</div>'
-        +'<input class="capsule-input" id="capsuleInput" type="text" maxlength="40" placeholder="짧게, 솔직하게">'
-        +'<br><button class="capsule-btn" onclick="saveCapsule()">남기기</button>'
-        +'<div class="capsule-sent" id="capsuleSent" style="display:none">📮 1년 뒤에 열립니다</div>'
-        +'</div>';
-    }
-
     // Share
     html += '<div class="share-wrap">'
       +'<div class="share-label">나의 미스토리 링크</div>'
