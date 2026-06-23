@@ -367,6 +367,9 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     if(pd) pd.innerHTML = '<div style="text-align:center;padding:16px;color:#aaa;font-size:12px">번역 중...</div>';
     var langMap = {en:'en', ja:'jp', zh:'zh'};
     var texts = {poem: _currentData.today_poem};
+    if(_currentData.reflection) texts.reflection = _currentData.reflection;
+    if(_currentData.tomorrow_question) texts.tomorrow_question = _currentData.tomorrow_question;
+    if(_currentData.today_word_reason) texts.today_word_reason = _currentData.today_word_reason;
     (_currentData.shots||[]).forEach(function(s,i){ if(s.poem) texts['shot'+i]=s.poem; });
     fetch(SERVER + '/api/translate', {
       method:'POST', headers:{'Content-Type':'application/json'},
@@ -390,6 +393,15 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
             els.forEach(function(e){ e.innerHTML = t2.trim().split('\n').filter(function(l){return l.trim();}).map(function(l){return esc(l);}).join('<br>'); });
           }
         });
+        // reflection
+        var tr = j.translations && j.translations.reflection;
+        if(tr){ var re=document.querySelector('.reflection-text'); if(re) re.textContent=tr; }
+        // tomorrow_question
+        var tq = j.translations && j.translations.tomorrow_question;
+        if(tq){ var tqe=document.querySelector('.tomorrow-q'); if(tqe) tqe.textContent=tq; }
+        // today_word_reason
+        var twr = j.translations && j.translations.today_word_reason;
+        if(twr){ var twre=document.querySelector('.today-word-reason'); if(twre) twre.textContent=twr; }
       })
       .catch(function(){ if(pd) pd.innerHTML = poemLinesHtml(_currentData.today_poem); });
   };
