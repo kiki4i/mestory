@@ -45,6 +45,7 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
 .reflection-label{font-size:10px;color:rgba(200,169,110,.45);letter-spacing:.2em;margin-bottom:16px}
 .reflection-text{font-size:17px;color:#f5f0e8;line-height:1.9;font-style:italic;margin-bottom:24px}
 .tomorrow-q{display:inline-block;padding:12px 22px;border:1px solid rgba(200,169,110,.35);border-radius:24px;font-size:13px;color:rgba(200,169,110,.85);line-height:1.7}
+.today-word{margin-top:20px;padding-top:20px;border-top:1px solid rgba(200,169,110,.15);font-size:13px;color:rgba(200,169,110,.7);line-height:1.8}
 .share-wrap{background:#faf7f2;padding:24px 40px;border-top:1px solid #e5dece;text-align:center}
 .share-label{font-size:11px;color:#9e8250;letter-spacing:.1em;margin-bottom:8px}
 .share-url{font-size:12px;color:#6b6050;margin-bottom:14px;word-break:break-all}
@@ -514,6 +515,9 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
       }
       if(data.tomorrow_question){
         html += '<div class="tomorrow-q">'+esc(data.tomorrow_question)+'</div>';
+      }
+      if(data.today_word){
+        html += '<div class="today-word">'+esc(data.today_word)+'</div>';
       }
       html += '</div>';
     }
