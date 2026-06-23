@@ -50,6 +50,16 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
 .today-word-hanja{font-size:32px;color:#f5f0e8;letter-spacing:.08em;margin-bottom:4px;font-weight:300}
 .today-word-korean{font-size:13px;color:rgba(200,169,110,.7);letter-spacing:.1em;margin-bottom:10px}
 .today-word-reason{font-size:13px;color:rgba(245,240,232,.55);line-height:1.8;font-style:italic}
+.capsule-wrap{margin:0;padding:28px 40px;background:#0a0f0a;border-top:1px solid rgba(100,160,100,.2);text-align:center}
+.capsule-label{font-size:10px;color:rgba(120,180,120,.5);letter-spacing:.2em;margin-bottom:12px}
+.capsule-input{width:100%;max-width:280px;background:transparent;border:none;border-bottom:1px solid rgba(120,180,120,.3);color:#c8e6c8;font-size:15px;text-align:center;padding:8px 0;outline:none;font-family:inherit}
+.capsule-input::placeholder{color:rgba(120,180,120,.3)}
+.capsule-btn{margin-top:14px;display:inline-block;padding:8px 24px;border:1px solid rgba(120,180,120,.4);border-radius:20px;font-size:12px;color:rgba(120,180,120,.8);background:transparent;cursor:pointer;letter-spacing:.05em}
+.capsule-sent{font-size:13px;color:rgba(120,180,120,.7);font-style:italic;margin-top:8px}
+.capsule-open{margin:0;padding:28px 40px;background:#0a1a0a;border-top:1px solid rgba(100,200,100,.25);text-align:center}
+.capsule-open-label{font-size:10px;color:rgba(120,200,120,.5);letter-spacing:.2em;margin-bottom:14px}
+.capsule-open-msg{font-size:18px;color:#d4f5d4;line-height:1.9;font-style:italic;margin-bottom:8px}
+.capsule-open-date{font-size:11px;color:rgba(120,180,120,.45)}
 .share-wrap{background:#faf7f2;padding:24px 40px;border-top:1px solid #e5dece;text-align:center}
 .share-label{font-size:11px;color:#9e8250;letter-spacing:.1em;margin-bottom:8px}
 .share-url{font-size:12px;color:#6b6050;margin-bottom:14px;word-break:break-all}
@@ -534,6 +544,27 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
       html += '</div>';
     }
 
+    // Capsule - open (past message)
+    var today = new Date().toISOString().slice(0,10);
+    if(data.time_capsule && data.capsule_open_date && data.capsule_open_date <= today){
+      var capDate = data.created_at ? data.created_at.slice(0,10) : '';
+      html += '<div class="capsule-open">'
+        +'<div class="capsule-open-label">📬 한 달 전의 내가 남긴 말</div>'
+        +'<div class="capsule-open-msg">"'+esc(data.time_capsule)+'"</div>'
+        +(capDate?'<div class="capsule-open-date">— '+capDate+' 의 나</div>':'')
+        +'</div>';
+    }
+
+    // Capsule - write (new message)
+    if(!data.time_capsule){
+      html += '<div class="capsule-wrap">'
+        +'<div class="capsule-label">한 달 뒤의 나에게 한 마디</div>'
+        +'<input class="capsule-input" id="capsuleInput" type="text" maxlength="40" placeholder="짧게, 솔직하게">'
+        +'<br><button class="capsule-btn" onclick="saveCapsule()">남기기</button>'
+        +'<div class="capsule-sent" id="capsuleSent" style="display:none">📮 한 달 뒤에 열립니다</div>'
+        +'</div>';
+    }
+
     // Share
     html += '<div class="share-wrap">'
       +'<div class="share-label">나의 미스토리 링크</div>'
@@ -604,6 +635,25 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
       document.body.removeChild(el);
       alert('링크가 복사됐어요!\n카톡·인스타·명함에 붙여 담으세요');
     }
+  };
+
+  window.saveCapsule = function(){
+    var msg = (document.getElementById('capsuleInput')||{}).value||'';
+    msg = msg.trim();
+    if(!msg){ alert('한 마디를 입력해 주세요'); return; }
+    var docId = new URLSearchParams(location.search).get('id');
+    if(!docId){ return; }
+    fetch('https://humandocu-server-production.up.railway.app/api/today/capsule', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({doc_id: docId, time_capsule: msg})
+    }).then(function(r){ return r.json(); }).then(function(d){
+      if(d.ok){
+        document.getElementById('capsuleInput').style.display='none';
+        document.querySelector('.capsule-btn').style.display='none';
+        document.getElementById('capsuleSent').style.display='block';
+      }
+    }).catch(function(){ alert('저장 중 오류가 발생했어요'); });
   };
 
   function _getStoredEmail() {
