@@ -50,6 +50,11 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
 .today-word-hanja{font-size:32px;color:#f5f0e8;letter-spacing:.08em;margin-bottom:4px;font-weight:300}
 .today-word-korean{font-size:13px;color:rgba(200,169,110,.7);letter-spacing:.1em;margin-bottom:10px}
 .today-word-reason{font-size:13px;color:rgba(245,240,232,.55);line-height:1.8;font-style:italic}
+.today-verse{margin-top:28px;padding-top:24px;border-top:1px solid rgba(200,169,110,.15);text-align:center}
+.today-verse-label{font-size:10px;letter-spacing:.15em;color:rgba(200,169,110,.45);margin-bottom:16px}
+.today-verse-text{font-size:16px;color:#f5f0e8;line-height:1.9;font-style:italic;font-family:Georgia,serif;margin-bottom:10px;padding:0 12px}
+.today-verse-credit{font-size:12px;color:rgba(200,169,110,.6);letter-spacing:.04em;margin-bottom:12px}
+.today-verse-note{font-size:13px;color:rgba(245,240,232,.5);line-height:1.8;font-style:italic}
 .capsule-wrap{margin:0;padding:32px 40px;background:#1a1a2e;border-top:1px solid rgba(150,180,255,.2);text-align:center}
 .capsule-label{font-size:13px;color:rgba(180,200,255,.9);letter-spacing:.05em;margin-bottom:16px;font-weight:500}
 .capsule-input{width:100%;max-width:300px;background:rgba(255,255,255,.08);border:1px solid rgba(150,180,255,.4);border-radius:8px;color:#fff;font-size:15px;text-align:center;padding:12px 16px;outline:none;font-family:inherit}
@@ -551,6 +556,17 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
           +(hanja?'<div class="today-word-hanja">'+esc(hanja)+'</div>':'')
           +(korean?'<div class="today-word-korean">'+esc(korean)+'</div>':'')
           +(reason?'<div class="today-word-reason">'+esc(reason)+'</div>':'')
+          +'</div>';
+      }
+      if(data.today_verse){
+        var verse = data.today_verse || '';
+        var credit = data.today_verse_credit || '';
+        var note = data.today_verse_note || '';
+        html += '<div class="today-verse">'
+          +'<div class="today-verse-label">오늘 당신을 위한 시</div>'
+          +(verse?'<div class="today-verse-text">'+esc(verse)+'</div>':'')
+          +(credit?'<div class="today-verse-credit">'+esc(credit)+'</div>':'')
+          +(note?'<div class="today-verse-note">'+esc(note)+'</div>':'')
           +'</div>';
       }
       html += '</div>';
