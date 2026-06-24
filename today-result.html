@@ -340,12 +340,27 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     }, 1500);
   }
 
-  window.selectLang = function(lang, el) {
+  var _UI_LABELS = {
+      ko: { shots:'오늘의 사진들', word:'오늘을 표현한 한 마디', verse:'오늘 당신을 위한 시' },
+      en: { shots:"Today's Shots", word:'A Word for Today', verse:'A Poem for You' },
+      ja: { shots:'今日の写真', word:'今日を表す一言', verse:'あなたへの詩' },
+      zh: { shots:'今日照片', word:'今日一词', verse:'今日诗句' }
+    };
+    window.selectLang = function(lang, el) {
     _ttsLang = lang;
     document.querySelectorAll('.lang-tab').forEach(function(b){ b.classList.remove('active'); });
     el.classList.add('active');
     if(!_currentData) return;
     var pd = document.getElementById('poem-display');
+
+    var _lbl = _UI_LABELS[lang] || _UI_LABELS.ko;
+    document.querySelectorAll('.section-label').forEach(function(el){
+      if(el.textContent.trim().match(/오늘의 사진들|Today|今日の写真|今日照片/)) el.textContent = _lbl.shots;
+    });
+    var _wl = document.querySelector('.today-word-label');
+    if(_wl) _wl.textContent = _lbl.word;
+    var _vl = document.querySelector('.today-verse-label');
+    if(_vl) _vl.textContent = _lbl.verse;
 
     if(lang === 'ko'){
       if(pd) pd.innerHTML = poemLinesHtml(_currentData.today_poem);
@@ -353,6 +368,12 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
         var els = document.querySelectorAll('.shot-poem-line[data-idx="'+i+'"]');
         els.forEach(function(e){ if(s.poem) e.innerHTML = s.poem.trim().split('\n').filter(function(l){return l.trim();}).map(function(l){return esc(l);}).join('<br>'); });
       });
+      // ko 레이블 복원
+      document.querySelectorAll('.section-label').forEach(function(el){
+        if(el.textContent.trim().match(/Today|今日の写真|今日照片|shots/i)) el.textContent = '오늘의 사진들';
+      });
+      if(_wl) _wl.textContent = '오늘을 표현한 한 마디';
+      if(_vl) _vl.textContent = '오늘 당신을 위한 시';
       return;
     }
 
@@ -377,6 +398,7 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     if(_currentData.today_word_reason) texts.today_word_reason = _currentData.today_word_reason;
     if(_currentData.today_verse) texts.today_verse = _currentData.today_verse;
     if(_currentData.today_verse_note) texts.today_verse_note = _currentData.today_verse_note;
+    // today_verse_credit(시인명/작품명)은 번역하지 않음
     (_currentData.shots||[]).forEach(function(s,i){ if(s.poem) texts['shot'+i]=s.poem; });
     fetch(SERVER + '/api/translate', {
       method:'POST', headers:{'Content-Type':'application/json'},
