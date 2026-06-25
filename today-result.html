@@ -344,25 +344,33 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
       ko: { shots:'오늘의 사진들', word:'오늘을 표현한 한 마디', verse:'오늘 당신을 위한 시',
             capsule:'1년 뒤의 나에게 한 마디', capsulePh:'짧게, 솔직하게', capsuleBtn:'남기기',
             capsuleSent:'📮 1년 뒤에 열립니다', shareLabel:'나의 미스토리 링크',
-            copyBtn:'🔗 링크 복사', slideBtn:'▶ 슬라이드쇼 제생', deleteBtn:'이기록 삭제',
+            copyBtn:'🔗 링크 복사', slideBtn:'▶ 슬라이드쇼 재생', deleteBtn:'이 기록 삭제',
+            poemSection:'✦ 오늘을 담은 시',
+            tagline:'매일을 담아보세요.<br>모으면 그것이 당신이에요.',
             ctaTitle:'오늘 당신의 하루도<br>이야기가 될 수 있어요',
             ctaDesc:'사진과 짧은 글 한 줄 · 무료 · AI가 기억할 글로 담아드립니다' },
       en: { shots:"Today's Shots", word:'A Word for Today', verse:'A Poem for You',
             capsule:'A Message to Myself in a Year', capsulePh:'Short and honest', capsuleBtn:'Save',
             capsuleSent:'📮 Opens in a year', shareLabel:'My Mestory Link',
             copyBtn:'🔗 Copy Link', slideBtn:'▶ Slideshow', deleteBtn:'Delete this record',
+            poemSection:'✦ A Poem for Today',
+            tagline:'Capture every day.<br>Together, they become you.',
             ctaTitle:'Your day can become<br>a story too',
             ctaDesc:'A photo and a short line · Free · AI will remember it for you' },
       ja: { shots:'今日の写真', word:'今日を表す一言', verse:'あなたへの詩',
             capsule:'1年後の自分へ一言', capsulePh:'短く、正直に', capsuleBtn:'保存',
             capsuleSent:'📮 1年後に開きます', shareLabel:'私のミストーリリンク',
             copyBtn:'🔗 リンクをコピー', slideBtn:'▶ スライドショー', deleteBtn:'この記録を削除',
+            poemSection:'✦ 今日を詠んだ詩',
+            tagline:'毎日を記録しよう。<br>積み重ねると、それがあなた。',
             ctaTitle:'あなたの今日も<br>ストーリーになれる',
             ctaDesc:'写真と短い一言 · 無料 · AIが記憶してくれます' },
       zh: { shots:'今日照片', word:'今日一词', verse:'今日诗句',
             capsule:'给一年后的自己留言', capsulePh:'简短，真诚', capsuleBtn:'保存',
             capsuleSent:'📮 一年后开启', shareLabel:'我的Mestory链接',
             copyBtn:'🔗 复制链接', slideBtn:'▶ 幻灯片', deleteBtn:'删除此记录',
+            poemSection:'✦ 今日之诗',
+            tagline:'记录每一天。<br>积累起来，那就是你。',
             ctaTitle:'你的今天也可以<br>成为一个故事',
             ctaDesc:'一张照片和一句话 · 免费 · AI会为你记住' }
     };
@@ -377,16 +385,16 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
       var koTone = badge.getAttribute('data-ko');
       badge.textContent = _translateGenre(koTone, lang) || koTone;
     });
-    var psl = document.getElementById('poem-section-label');
-    if(psl) psl.textContent = _UI_LABELS.poemSection[lang] || _UI_LABELS.poemSection.ko;
-    var dBtn = document.getElementById('delete-btn');
-    if(dBtn) dBtn.textContent = _UI_LABELS.deleteBtn[lang] || _UI_LABELS.deleteBtn.ko;
-    var tgl = document.getElementById('share-tagline');
-    if(tgl) tgl.innerHTML = _UI_LABELS.tagline[lang] || _UI_LABELS.tagline.ko;
 
     var pd = document.getElementById('poem-display');
 
     var _lbl = _UI_LABELS[lang] || _UI_LABELS.ko;
+    var psl = document.getElementById('poem-section-label');
+    if(psl) psl.textContent = _lbl.poemSection;
+    var dBtn = document.getElementById('delete-btn');
+    if(dBtn) dBtn.textContent = _lbl.deleteBtn;
+    var tgl = document.getElementById('share-tagline');
+    if(tgl) tgl.innerHTML = _lbl.tagline;
     document.querySelectorAll('.section-label').forEach(function(el){
       if(el.textContent.trim().match(/오늘의 사진들|Today.s Shots|今日の写真|今日照片/)) el.textContent = _lbl.shots;
     });
@@ -545,12 +553,6 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     if (idx === undefined) return tone;
     return (_GENRE_MAP[lang] && _GENRE_MAP[lang][idx]) || tone;
   }
-
-  var _UI_LABELS = {
-    poemSection: {ko:'✦ 오늘을 담은 시', en:'✦ A Poem for Today', ja:'✦ 今日を詠んだ詩', zh:'✦ 今日之诗'},
-    deleteBtn:   {ko:'이 기록 삭제', en:'Delete this record', ja:'この記録を削除', zh:'删除此记录'},
-    tagline:     {ko:'매일을 담아보세요.<br>모으면 그것이 당신이에요.', en:'Capture every day.<br>Together, they become you.', ja:'毎日を記録しよう。<br>積み重ねると、それがあなた。', zh:'记录每一天。<br>积累起来，那就是你。'}
-  };
 
   function genreBadge(tone){
     if(!tone) return '';
