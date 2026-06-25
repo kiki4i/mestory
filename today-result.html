@@ -371,6 +371,19 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     document.querySelectorAll('.lang-tab').forEach(function(b){ b.classList.remove('active'); });
     el.classList.add('active');
     if(!_currentData) return;
+
+    // 장르 배지, 섹션 레이블, 삭제 버튼, 태그라인 번역
+    document.querySelectorAll('.shot-tone').forEach(function(badge){
+      var koTone = badge.getAttribute('data-ko');
+      badge.textContent = _translateGenre(koTone, lang) || koTone;
+    });
+    var psl = document.getElementById('poem-section-label');
+    if(psl) psl.textContent = _UI_LABELS.poemSection[lang] || _UI_LABELS.poemSection.ko;
+    var dBtn = document.getElementById('delete-btn');
+    if(dBtn) dBtn.textContent = _UI_LABELS.deleteBtn[lang] || _UI_LABELS.deleteBtn.ko;
+    var tgl = document.getElementById('share-tagline');
+    if(tgl) tgl.innerHTML = _UI_LABELS.tagline[lang] || _UI_LABELS.tagline.ko;
+
     var pd = document.getElementById('poem-display');
 
     var _lbl = _UI_LABELS[lang] || _UI_LABELS.ko;
@@ -513,10 +526,37 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     'quiet doc':['#1A2A5E','#EAF0FF'],'melo romance':['#7A1040','#FFF0F5'],
     'weird comedy':['#7A3A00','#FFF5E8'],'twist thriller':['#3A0060','#F5EAFF'],
   };
+
+  var _GENRE_MAP = {
+    ko: ['감동명작','히어로 액션','잔잔한 다큐','멜로 로맨스','병맛 코미디','반전 스릴러'],
+    en: ['Touching','Hero Action','Quiet Doc','Melo Romance','Absurd Comedy','Twist Thriller'],
+    ja: ['感動作','ヒーローアクション','静かなドキュメンタリー','メロロマンス','ギャグコメディ','どんでん返し'],
+    zh: ['感动佳作','英雄动作','平静纪录','爱情浪漫','无厘头喜剧','反转惊悚'],
+    _idx: {}
+  };
+  (function(){
+    ['ko','en','ja','zh'].forEach(function(l){
+      _GENRE_MAP[l].forEach(function(v,i){ _GENRE_MAP._idx[v.toLowerCase()] = i; });
+    });
+  })();
+  function _translateGenre(tone, lang) {
+    if (!tone) return tone;
+    var idx = _GENRE_MAP._idx[tone.toLowerCase()];
+    if (idx === undefined) return tone;
+    return (_GENRE_MAP[lang] && _GENRE_MAP[lang][idx]) || tone;
+  }
+
+  var _UI_LABELS = {
+    poemSection: {ko:'✦ 오늘을 담은 시', en:'✦ A Poem for Today', ja:'✦ 今日を詠んだ詩', zh:'✦ 今日之诗'},
+    deleteBtn:   {ko:'이 기록 삭제', en:'Delete this record', ja:'この記録を削除', zh:'删除此记录'},
+    tagline:     {ko:'매일을 담아보세요.<br>모으면 그것이 당신이에요.', en:'Capture every day.<br>Together, they become you.', ja:'毎日を記録しよう。<br>積み重ねると、それがあなた。', zh:'记录每一天。<br>积累起来，那就是你。'}
+  };
+
   function genreBadge(tone){
     if(!tone) return '';
-    var c = GENRE_COLORS[tone] || GENRE_COLORS[tone.toLowerCase()] || ['#7B4F1E','#FFF3E0'];
-    return '<span style="display:inline-block;padding:3px 10px;border-radius:20px;background:'+c[1]+';color:'+c[0]+';font-size:11px;letter-spacing:.08em;font-weight:600">'+esc(tone)+'</span>';
+    var koTone = _translateGenre(tone, 'ko') || tone;
+    var c = GENRE_COLORS[koTone] || GENRE_COLORS[tone] || GENRE_COLORS[tone.toLowerCase()] || ['#7B4F1E','#FFF3E0'];
+    return '<span class="shot-tone" data-ko="'+esc(koTone)+'" style="display:inline-block;padding:3px 10px;border-radius:20px;background:'+c[1]+';color:'+c[0]+';font-size:11px;letter-spacing:.08em;font-weight:600">'+esc(tone)+'</span>';
   }
 
   function poemLinesHtml(text, fs, color){
@@ -589,7 +629,7 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     // Today poem (마지막)
     if(data.today_poem){
       html += '<div class="section">'
-        +'<div class="section-label">✦ 오늘을 담은 시</div>'
+        +'<div class="section-label" id="poem-section-label">✦ 오늘을 담은 시</div>'
         +(data.genre?'<div style="text-align:center;margin-bottom:14px">'+genreBadge(data.genre)+'</div>':'')
         +'<div class="rep-poem" id="poem-display">'+poemLinesHtml(data.today_poem)+'</div>'
         +'</div>';
@@ -671,12 +711,12 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
       +'<button class="btn-copy" onclick="doCopy()">🔗 링크 복사</button>'
       +(hasImgs && data.today_poem?'<button id="play-btn" class="play-btn" onclick="togglePlay()">▶ 슬라이드쇼 재생</button>':'')
       +'</div>'
-      +'<div class="share-tagline">매일을 담아보세요.<br>모으면 그것이 당신이에요.</div>'
+      +'<div class="share-tagline" id="share-tagline">매일을 담아보세요.<br>모으면 그것이 당신이에요.</div>'
       +'</div>';
 
     // 삭제 버튼 (CTA 위)
     html += '<div style="text-align:center;padding:4px 40px 20px">'
-      +'<button onclick="doDelete()" style="background:none;border:none;font-size:13px;'
+      +'<button id="delete-btn" onclick="doDelete()" style="background:none;border:none;font-size:13px;'
       +'color:#e53e3e;cursor:pointer;font-family:inherit;font-weight:500;'
       +'text-decoration:underline;text-underline-offset:3px;letter-spacing:.02em">'
       +'이 기록 삭제</button>'
