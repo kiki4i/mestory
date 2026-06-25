@@ -31,6 +31,10 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   if (!e.request.url.startsWith('http')) return;
   if (e.request.method !== 'GET') return;
+  if (new URL(e.request.url).pathname.startsWith('/api/')) {
+    e.respondWith(fetch(e.request));
+    return;
+  }
   e.respondWith(
     fetch(e.request)
       .then((res) => {
