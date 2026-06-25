@@ -340,12 +340,92 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     }, 1500);
   }
 
-  window.selectLang = function(lang, el) {
+  var _UI_LABELS = {
+      ko: { shots:'오늘의 사진들', word:'오늘을 표현한 한 마디', verse:'오늘 당신을 위한 시',
+            capsule:'1년 뒤의 나에게 한 마디', capsulePh:'짧게, 솔직하게', capsuleBtn:'남기기',
+            capsuleSent:'📮 1년 뒤에 열립니다', shareLabel:'나의 미스토리 링크',
+            copyBtn:'🔗 링크 복사', slideBtn:'▶ 슬라이드쇼 재생', deleteBtn:'이 기록 삭제',
+            poemSection:'✦ 오늘을 담은 시',
+            tagline:'매일을 담아보세요.<br>모으면 그것이 당신이에요.',
+            ctaTitle:'오늘 당신의 하루도<br>이야기가 될 수 있어요',
+            ctaDesc:'사진과 짧은 글 한 줄 · 무료 · AI가 기억할 글로 담아드립니다',
+            ctaBtn:'나도 기록하기 →' },
+      en: { shots:"Today's Shots", word:'A Word for Today', verse:'A Poem for You',
+            capsule:'A Message to Myself in a Year', capsulePh:'Short and honest', capsuleBtn:'Save',
+            capsuleSent:'📮 Opens in a year', shareLabel:'My Mestory Link',
+            copyBtn:'🔗 Copy Link', slideBtn:'▶ Slideshow', deleteBtn:'Delete this record',
+            poemSection:'✦ A Poem for Today',
+            tagline:'Capture every day.<br>Together, they become you.',
+            ctaTitle:'Your day can become<br>a story too',
+            ctaDesc:'A photo and a short line · Free · AI will remember it for you',
+            ctaBtn:'Start My Story →' },
+      ja: { shots:'今日の写真', word:'今日を表す一言', verse:'あなたへの詩',
+            capsule:'1年後の自分へ一言', capsulePh:'短く、正直に', capsuleBtn:'保存',
+            capsuleSent:'📮 1年後に開きます', shareLabel:'私のミストーリリンク',
+            copyBtn:'🔗 リンクをコピー', slideBtn:'▶ スライドショー', deleteBtn:'この記録を削除',
+            poemSection:'✦ 今日を詠んだ詩',
+            tagline:'毎日を記録しよう。<br>積み重ねると、それがあなた。',
+            ctaTitle:'あなたの今日も<br>ストーリーになれる',
+            ctaDesc:'写真と短い一言 · 無料 · AIが記憶してくれます',
+            ctaBtn:'私も記録する →' },
+      zh: { shots:'今日照片', word:'今日一词', verse:'今日诗句',
+            capsule:'给一年后的自己留言', capsulePh:'简短，真诚', capsuleBtn:'保存',
+            capsuleSent:'📮 一年后开启', shareLabel:'我的Mestory链接',
+            copyBtn:'🔗 复制链接', slideBtn:'▶ 幻灯片', deleteBtn:'删除此记录',
+            poemSection:'✦ 今日之诗',
+            tagline:'记录每一天。<br>积累起来，那就是你。',
+            ctaTitle:'你的今天也可以<br>成为一个故事',
+            ctaDesc:'一张照片和一句话 · 免费 · AI会为你记住',
+            ctaBtn:'我也来记录 →' }
+    };
+    window.selectLang = function(lang, el) {
     _ttsLang = lang;
     document.querySelectorAll('.lang-tab').forEach(function(b){ b.classList.remove('active'); });
     el.classList.add('active');
     if(!_currentData) return;
+
+    // 장르 배지, 섹션 레이블, 삭제 버튼, 태그라인 번역
+    document.querySelectorAll('.shot-tone').forEach(function(badge){
+      var koTone = badge.getAttribute('data-ko');
+      badge.textContent = _translateGenre(koTone, lang) || koTone;
+    });
+
     var pd = document.getElementById('poem-display');
+
+    var _lbl = _UI_LABELS[lang] || _UI_LABELS.ko;
+    var psl = document.getElementById('poem-section-label');
+    if(psl) psl.textContent = _lbl.poemSection;
+    var dBtn = document.getElementById('delete-btn');
+    if(dBtn) dBtn.textContent = _lbl.deleteBtn;
+    var tgl = document.getElementById('share-tagline');
+    if(tgl) tgl.innerHTML = _lbl.tagline;
+    document.querySelectorAll('.section-label').forEach(function(el){
+      if(el.textContent.trim().match(/오늘의 사진들|Today.s Shots|今日の写真|今日照片/)) el.textContent = _lbl.shots;
+    });
+    var _wl = document.querySelector('.today-word-label');
+    if(_wl) _wl.textContent = _lbl.word;
+    var _vl = document.querySelector('.today-verse-label');
+    if(_vl) _vl.textContent = _lbl.verse;
+    var _cl = document.querySelector('.capsule-label');
+    if(_cl) _cl.textContent = _lbl.capsule;
+    var _ci = document.querySelector('#capsuleInput');
+    if(_ci) _ci.placeholder = _lbl.capsulePh;
+    var _cb = document.querySelector('.capsule-btn');
+    if(_cb) _cb.textContent = _lbl.capsuleBtn;
+    var _sl = document.querySelector('.share-label');
+    if(_sl) _sl.textContent = _lbl.shareLabel;
+    var _copyb = document.querySelector('.btn-copy');
+    if(_copyb) _copyb.innerHTML = _lbl.copyBtn;
+    var _playb = document.querySelector('#play-btn');
+    if(_playb) _playb.innerHTML = _lbl.slideBtn;
+    var _delb = document.querySelector('.delete-btn');
+    if(_delb) _delb.textContent = _lbl.deleteBtn;
+    var _ctat = document.querySelector('.cta-title');
+    if(_ctat) _ctat.innerHTML = _lbl.ctaTitle;
+    var _ctad = document.querySelector('.cta-desc');
+    if(_ctad) _ctad.textContent = _lbl.ctaDesc;
+    var _ctab = document.querySelector('.cta-btn');
+    if(_ctab) _ctab.textContent = _lbl.ctaBtn;
 
     if(lang === 'ko'){
       if(pd) pd.innerHTML = poemLinesHtml(_currentData.today_poem);
@@ -353,6 +433,12 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
         var els = document.querySelectorAll('.shot-poem-line[data-idx="'+i+'"]');
         els.forEach(function(e){ if(s.poem) e.innerHTML = s.poem.trim().split('\n').filter(function(l){return l.trim();}).map(function(l){return esc(l);}).join('<br>'); });
       });
+      // ko 레이블 복원
+      document.querySelectorAll('.section-label').forEach(function(el){
+        if(el.textContent.trim().match(/Today|今日の写真|今日照片|shots/i)) el.textContent = '오늘의 사진들';
+      });
+      if(_wl) _wl.textContent = '오늘을 표현한 한 마디';
+      if(_vl) _vl.textContent = '오늘 당신을 위한 시';
       return;
     }
 
@@ -375,6 +461,9 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     if(_currentData.reflection) texts.reflection = _currentData.reflection;
     if(_currentData.tomorrow_question) texts.tomorrow_question = _currentData.tomorrow_question;
     if(_currentData.today_word_reason) texts.today_word_reason = _currentData.today_word_reason;
+    if(_currentData.today_verse) texts.today_verse = _currentData.today_verse;
+    if(_currentData.today_verse_note) texts.today_verse_note = _currentData.today_verse_note;
+    if(_currentData.today_verse_credit) texts.today_verse_credit = _currentData.today_verse_credit;
     (_currentData.shots||[]).forEach(function(s,i){ if(s.poem) texts['shot'+i]=s.poem; });
     fetch(SERVER + '/api/translate', {
       method:'POST', headers:{'Content-Type':'application/json'},
@@ -407,6 +496,13 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
         // today_word_reason
         var twr = j.translations && j.translations.today_word_reason;
         if(twr){ var twre=document.querySelector('.today-word-reason'); if(twre) twre.textContent=twr; }
+        // today_verse
+        var tv = j.translations && j.translations.today_verse;
+        if(tv){ var tve=document.querySelector('.today-verse-text'); if(tve) tve.textContent=tv; }
+        var tvn = j.translations && j.translations.today_verse_note;
+        if(tvn){ var tvne=document.querySelector('.today-verse-note'); if(tvne) tvne.textContent=tvn; }
+        var tvc = j.translations && j.translations.today_verse_credit;
+        if(tvc){ var tvce=document.querySelector('.today-verse-credit'); if(tvce) tvce.textContent=tvc; }
       })
       .catch(function(){ if(pd) pd.innerHTML = poemLinesHtml(_currentData.today_poem); });
   };
@@ -446,10 +542,31 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     'quiet doc':['#1A2A5E','#EAF0FF'],'melo romance':['#7A1040','#FFF0F5'],
     'weird comedy':['#7A3A00','#FFF5E8'],'twist thriller':['#3A0060','#F5EAFF'],
   };
+
+  var _GENRE_MAP = {
+    ko: ['감동명작','히어로 액션','잔잔한 다큐','멜로 로맨스','병맛 코미디','반전 스릴러'],
+    en: ['Touching','Hero Action','Quiet Doc','Melo Romance','Absurd Comedy','Twist Thriller'],
+    ja: ['感動作','ヒーローアクション','静かなドキュメンタリー','メロロマンス','ギャグコメディ','どんでん返し'],
+    zh: ['感动佳作','英雄动作','平静纪录','爱情浪漫','无厘头喜剧','反转惊悚'],
+    _idx: {}
+  };
+  (function(){
+    ['ko','en','ja','zh'].forEach(function(l){
+      _GENRE_MAP[l].forEach(function(v,i){ _GENRE_MAP._idx[v.toLowerCase()] = i; });
+    });
+  })();
+  function _translateGenre(tone, lang) {
+    if (!tone) return tone;
+    var idx = _GENRE_MAP._idx[tone.toLowerCase()];
+    if (idx === undefined) return tone;
+    return (_GENRE_MAP[lang] && _GENRE_MAP[lang][idx]) || tone;
+  }
+
   function genreBadge(tone){
     if(!tone) return '';
-    var c = GENRE_COLORS[tone] || GENRE_COLORS[tone.toLowerCase()] || ['#7B4F1E','#FFF3E0'];
-    return '<span style="display:inline-block;padding:3px 10px;border-radius:20px;background:'+c[1]+';color:'+c[0]+';font-size:11px;letter-spacing:.08em;font-weight:600">'+esc(tone)+'</span>';
+    var koTone = _translateGenre(tone, 'ko') || tone;
+    var c = GENRE_COLORS[koTone] || GENRE_COLORS[tone] || GENRE_COLORS[tone.toLowerCase()] || ['#7B4F1E','#FFF3E0'];
+    return '<span class="shot-tone" data-ko="'+esc(koTone)+'" style="display:inline-block;padding:3px 10px;border-radius:20px;background:'+c[1]+';color:'+c[0]+';font-size:11px;letter-spacing:.08em;font-weight:600">'+esc(tone)+'</span>';
   }
 
   function poemLinesHtml(text, fs, color){
@@ -515,14 +632,14 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
       });
     }
 
-    html += '<div class="section" style="padding-top:0">'
+    html += '<div class="section" style="padding-top:32px">'
       +'<div class="section-label">오늘의 사진들</div>'
       +shotsHtml+'</div>';
 
     // Today poem (마지막)
     if(data.today_poem){
       html += '<div class="section">'
-        +'<div class="section-label">✦ 오늘을 담은 시</div>'
+        +'<div class="section-label" id="poem-section-label">✦ 오늘을 담은 시</div>'
         +(data.genre?'<div style="text-align:center;margin-bottom:14px">'+genreBadge(data.genre)+'</div>':'')
         +'<div class="rep-poem" id="poem-display">'+poemLinesHtml(data.today_poem)+'</div>'
         +'</div>';
@@ -604,12 +721,12 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
       +'<button class="btn-copy" onclick="doCopy()">🔗 링크 복사</button>'
       +(hasImgs && data.today_poem?'<button id="play-btn" class="play-btn" onclick="togglePlay()">▶ 슬라이드쇼 재생</button>':'')
       +'</div>'
-      +'<div class="share-tagline">매일을 담아보세요.<br>모으면 그것이 당신이에요.</div>'
+      +'<div class="share-tagline" id="share-tagline">매일을 담아보세요.<br>모으면 그것이 당신이에요.</div>'
       +'</div>';
 
     // 삭제 버튼 (CTA 위)
     html += '<div style="text-align:center;padding:4px 40px 20px">'
-      +'<button onclick="doDelete()" style="background:none;border:none;font-size:13px;'
+      +'<button id="delete-btn" onclick="doDelete()" style="background:none;border:none;font-size:13px;'
       +'color:#e53e3e;cursor:pointer;font-family:inherit;font-weight:500;'
       +'text-decoration:underline;text-underline-offset:3px;letter-spacing:.02em">'
       +'이 기록 삭제</button>'
