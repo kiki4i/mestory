@@ -348,7 +348,8 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
             poemSection:'✦ 오늘을 담은 시',
             tagline:'매일을 담아보세요.<br>모으면 그것이 당신이에요.',
             ctaTitle:'오늘 당신의 하루도<br>이야기가 될 수 있어요',
-            ctaDesc:'사진과 짧은 글 한 줄 · 무료 · AI가 기억할 글로 담아드립니다' },
+            ctaDesc:'사진과 짧은 글 한 줄 · 무료 · AI가 기억할 글로 담아드립니다',
+            ctaBtn:'나도 기록하기 →' },
       en: { shots:"Today's Shots", word:'A Word for Today', verse:'A Poem for You',
             capsule:'A Message to Myself in a Year', capsulePh:'Short and honest', capsuleBtn:'Save',
             capsuleSent:'📮 Opens in a year', shareLabel:'My Mestory Link',
@@ -356,7 +357,8 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
             poemSection:'✦ A Poem for Today',
             tagline:'Capture every day.<br>Together, they become you.',
             ctaTitle:'Your day can become<br>a story too',
-            ctaDesc:'A photo and a short line · Free · AI will remember it for you' },
+            ctaDesc:'A photo and a short line · Free · AI will remember it for you',
+            ctaBtn:'Start My Story →' },
       ja: { shots:'今日の写真', word:'今日を表す一言', verse:'あなたへの詩',
             capsule:'1年後の自分へ一言', capsulePh:'短く、正直に', capsuleBtn:'保存',
             capsuleSent:'📮 1年後に開きます', shareLabel:'私のミストーリリンク',
@@ -364,7 +366,8 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
             poemSection:'✦ 今日を詠んだ詩',
             tagline:'毎日を記録しよう。<br>積み重ねると、それがあなた。',
             ctaTitle:'あなたの今日も<br>ストーリーになれる',
-            ctaDesc:'写真と短い一言 · 無料 · AIが記憶してくれます' },
+            ctaDesc:'写真と短い一言 · 無料 · AIが記憶してくれます',
+            ctaBtn:'私も記録する →' },
       zh: { shots:'今日照片', word:'今日一词', verse:'今日诗句',
             capsule:'给一年后的自己留言', capsulePh:'简短，真诚', capsuleBtn:'保存',
             capsuleSent:'📮 一年后开启', shareLabel:'我的Mestory链接',
@@ -372,7 +375,8 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
             poemSection:'✦ 今日之诗',
             tagline:'记录每一天。<br>积累起来，那就是你。',
             ctaTitle:'你的今天也可以<br>成为一个故事',
-            ctaDesc:'一张照片和一句话 · 免费 · AI会为你记住' }
+            ctaDesc:'一张照片和一句话 · 免费 · AI会为你记住',
+            ctaBtn:'我也来记录 →' }
     };
     window.selectLang = function(lang, el) {
     _ttsLang = lang;
@@ -420,6 +424,8 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     if(_ctat) _ctat.innerHTML = _lbl.ctaTitle;
     var _ctad = document.querySelector('.cta-desc');
     if(_ctad) _ctad.textContent = _lbl.ctaDesc;
+    var _ctab = document.querySelector('.cta-btn');
+    if(_ctab) _ctab.textContent = _lbl.ctaBtn;
 
     if(lang === 'ko'){
       if(pd) pd.innerHTML = poemLinesHtml(_currentData.today_poem);
@@ -457,7 +463,7 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     if(_currentData.today_word_reason) texts.today_word_reason = _currentData.today_word_reason;
     if(_currentData.today_verse) texts.today_verse = _currentData.today_verse;
     if(_currentData.today_verse_note) texts.today_verse_note = _currentData.today_verse_note;
-    // today_verse_credit(시인명/작품명)은 번역하지 않음
+    if(_currentData.today_verse_credit) texts.today_verse_credit = _currentData.today_verse_credit;
     (_currentData.shots||[]).forEach(function(s,i){ if(s.poem) texts['shot'+i]=s.poem; });
     fetch(SERVER + '/api/translate', {
       method:'POST', headers:{'Content-Type':'application/json'},
@@ -495,6 +501,8 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
         if(tv){ var tve=document.querySelector('.today-verse-text'); if(tve) tve.textContent=tv; }
         var tvn = j.translations && j.translations.today_verse_note;
         if(tvn){ var tvne=document.querySelector('.today-verse-note'); if(tvne) tvne.textContent=tvn; }
+        var tvc = j.translations && j.translations.today_verse_credit;
+        if(tvc){ var tvce=document.querySelector('.today-verse-credit'); if(tvce) tvce.textContent=tvc; }
       })
       .catch(function(){ if(pd) pd.innerHTML = poemLinesHtml(_currentData.today_poem); });
   };
