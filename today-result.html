@@ -375,8 +375,6 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     if(_currentData.reflection) texts.reflection = _currentData.reflection;
     if(_currentData.tomorrow_question) texts.tomorrow_question = _currentData.tomorrow_question;
     if(_currentData.today_word_reason) texts.today_word_reason = _currentData.today_word_reason;
-    if(_currentData.today_verse) texts.today_verse = _currentData.today_verse;
-    if(_currentData.today_verse_note) texts.today_verse_note = _currentData.today_verse_note;
     (_currentData.shots||[]).forEach(function(s,i){ if(s.poem) texts['shot'+i]=s.poem; });
     fetch(SERVER + '/api/translate', {
       method:'POST', headers:{'Content-Type':'application/json'},
@@ -409,11 +407,6 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
         // today_word_reason
         var twr = j.translations && j.translations.today_word_reason;
         if(twr){ var twre=document.querySelector('.today-word-reason'); if(twre) twre.textContent=twr; }
-        // today_verse
-        var tv = j.translations && j.translations.today_verse;
-        if(tv){ var tve=document.querySelector('.today-verse-text'); if(tve) tve.textContent=tv; }
-        var tvn = j.translations && j.translations.today_verse_note;
-        if(tvn){ var tvne=document.querySelector('.today-verse-note'); if(tvne) tvne.textContent=tvn; }
       })
       .catch(function(){ if(pd) pd.innerHTML = poemLinesHtml(_currentData.today_poem); });
   };
@@ -522,7 +515,7 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
       });
     }
 
-    html += '<div class="section" style="padding-top:32px">'
+    html += '<div class="section" style="padding-top:0">'
       +'<div class="section-label">오늘의 사진들</div>'
       +shotsHtml+'</div>';
 
