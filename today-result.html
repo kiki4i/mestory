@@ -655,7 +655,7 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     }
 
     // Reflection
-    if(data.reflection || data.tomorrow_question){
+    if(data.reflection || data.tomorrow_question || data.today_word_hanja || data.today_word || data.today_verse){
       html += '<div class="reflection-wrap">'
         +'<div class="reflection-label">오늘의 기록</div>';
       if(data.reflection){
