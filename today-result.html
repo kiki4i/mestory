@@ -341,10 +341,30 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
   }
 
   var _UI_LABELS = {
-      ko: { shots:'오늘의 사진들', word:'오늘을 표현한 한 마디', verse:'오늘 당신을 위한 시' },
-      en: { shots:"Today's Shots", word:'A Word for Today', verse:'A Poem for You' },
-      ja: { shots:'今日の写真', word:'今日を表す一言', verse:'あなたへの詩' },
-      zh: { shots:'今日照片', word:'今日一词', verse:'今日诗句' }
+      ko: { shots:'오늘의 사진들', word:'오늘을 표현한 한 마디', verse:'오늘 당신을 위한 시',
+            capsule:'1년 뒤의 나에게 한 마디', capsulePh:'짧게, 솔직하게', capsuleBtn:'남기기',
+            capsuleSent:'📮 1년 뒤에 열립니다', shareLabel:'나의 미스토리 링크',
+            copyBtn:'🔗 링크 복사', slideBtn:'▶ 슬라이드쇼 제생', deleteBtn:'이기록 삭제',
+            ctaTitle:'오늘 당신의 하루도<br>이야기가 될 수 있어요',
+            ctaDesc:'사진과 짧은 글 한 줄 · 무료 · AI가 기억할 글로 담아드립니다' },
+      en: { shots:"Today's Shots", word:'A Word for Today', verse:'A Poem for You',
+            capsule:'A Message to Myself in a Year', capsulePh:'Short and honest', capsuleBtn:'Save',
+            capsuleSent:'📮 Opens in a year', shareLabel:'My Mestory Link',
+            copyBtn:'🔗 Copy Link', slideBtn:'▶ Slideshow', deleteBtn:'Delete this record',
+            ctaTitle:'Your day can become<br>a story too',
+            ctaDesc:'A photo and a short line · Free · AI will remember it for you' },
+      ja: { shots:'今日の写真', word:'今日を表す一言', verse:'あなたへの詩',
+            capsule:'1年後の自分へ一言', capsulePh:'短く、正直に', capsuleBtn:'保存',
+            capsuleSent:'📮 1年後に開きます', shareLabel:'私のミストーリリンク',
+            copyBtn:'🔗 リンクをコピー', slideBtn:'▶ スライドショー', deleteBtn:'この記録を削除',
+            ctaTitle:'あなたの今日も<br>ストーリーになれる',
+            ctaDesc:'写真と短い一言 · 無料 · AIが記憶してくれます' },
+      zh: { shots:'今日照片', word:'今日一词', verse:'今日诗句',
+            capsule:'给一年后的自己留言', capsulePh:'简短，真诚', capsuleBtn:'保存',
+            capsuleSent:'📮 一年后开启', shareLabel:'我的Mestory链接',
+            copyBtn:'🔗 复制链接', slideBtn:'▶ 幻灯片', deleteBtn:'删除此记录',
+            ctaTitle:'你的今天也可以<br>成为一个故事',
+            ctaDesc:'一张照片和一句话 · 免费 · AI会为你记住' }
     };
     window.selectLang = function(lang, el) {
     _ttsLang = lang;
@@ -355,12 +375,30 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
 
     var _lbl = _UI_LABELS[lang] || _UI_LABELS.ko;
     document.querySelectorAll('.section-label').forEach(function(el){
-      if(el.textContent.trim().match(/오늘의 사진들|Today|今日の写真|今日照片/)) el.textContent = _lbl.shots;
+      if(el.textContent.trim().match(/오늘의 사진들|Today.s Shots|今日の写真|今日照片/)) el.textContent = _lbl.shots;
     });
     var _wl = document.querySelector('.today-word-label');
     if(_wl) _wl.textContent = _lbl.word;
     var _vl = document.querySelector('.today-verse-label');
     if(_vl) _vl.textContent = _lbl.verse;
+    var _cl = document.querySelector('.capsule-label');
+    if(_cl) _cl.textContent = _lbl.capsule;
+    var _ci = document.querySelector('#capsuleInput');
+    if(_ci) _ci.placeholder = _lbl.capsulePh;
+    var _cb = document.querySelector('.capsule-btn');
+    if(_cb) _cb.textContent = _lbl.capsuleBtn;
+    var _sl = document.querySelector('.share-label');
+    if(_sl) _sl.textContent = _lbl.shareLabel;
+    var _copyb = document.querySelector('.btn-copy');
+    if(_copyb) _copyb.innerHTML = _lbl.copyBtn;
+    var _playb = document.querySelector('#play-btn');
+    if(_playb) _playb.innerHTML = _lbl.slideBtn;
+    var _delb = document.querySelector('.delete-btn');
+    if(_delb) _delb.textContent = _lbl.deleteBtn;
+    var _ctat = document.querySelector('.cta-title');
+    if(_ctat) _ctat.innerHTML = _lbl.ctaTitle;
+    var _ctad = document.querySelector('.cta-desc');
+    if(_ctad) _ctad.textContent = _lbl.ctaDesc;
 
     if(lang === 'ko'){
       if(pd) pd.innerHTML = poemLinesHtml(_currentData.today_poem);
