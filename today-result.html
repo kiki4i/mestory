@@ -724,7 +724,13 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
       +'<div class="share-tagline" id="share-tagline">매일을 담아보세요.<br>모으면 그것이 당신이에요.</div>'
       +'</div>';
 
-    // 삭제 버튼 (CTA 위)
+    // 내 기록 모음 / 삭제 버튼 (CTA 위)
+    html += '<div style="text-align:center;padding:8px 40px 0">'
+      +'<button onclick="doSendMyLink()" style="background:none;border:none;font-size:13px;'
+      +'color:#C8870A;cursor:pointer;font-family:inherit;font-weight:500;'
+      +'text-decoration:underline;text-underline-offset:3px;letter-spacing:.02em">'
+      +'📬 내 기록 모음 링크 받기</button>'
+      +'</div>';
     html += '<div style="text-align:center;padding:4px 40px 20px">'
       +'<button id="delete-btn" onclick="doDelete()" style="background:none;border:none;font-size:13px;'
       +'color:#e53e3e;cursor:pointer;font-family:inherit;font-weight:500;'
@@ -819,6 +825,51 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
 
   window.closeDeleteModal = function(){
     var m = _delModal(); if(m) m.style.display = 'none';
+  };
+
+  window.doSendMyLink = function(){
+    var savedEmail = _getStoredEmail();
+    var nickname = (_currentData && _currentData.nickname) || '';
+    _delBox().innerHTML =
+      '<div style="font-size:16px;font-weight:600;color:#2d2a22;margin-bottom:8px">내 기록 모음 링크 받기</div>'
+      +'<div style="font-size:13px;color:#6b6050;line-height:1.75;margin-bottom:18px">'
+      +'내 모든 투*필 기록 링크를 이메일로 보내드릴게요.<br>링크는 24시간 유효합니다.</div>'
+      +'<input id="my-link-email" type="email" autocomplete="email" placeholder="your@email.com"'
+      +' value="'+esc(savedEmail)+'" style="'+_INPUT+'">'
+      +'<button id="my-link-send-btn" onclick="doSendMyLinkRequest()" style="'+_BTN+'background:#C8870A;color:#FFF8ED">링크 받기</button>'
+      +'<button onclick="closeDeleteModal()" style="'+_CANCEL+'">취소</button>';
+    _delModal().style.display = 'flex';
+    setTimeout(function(){ var i=document.getElementById('my-link-email'); if(i&&!savedEmail) i.focus(); }, 80);
+  };
+
+  window.doSendMyLinkRequest = function(){
+    var emailEl = document.getElementById('my-link-email');
+    var email = emailEl ? emailEl.value.trim().toLowerCase() : '';
+    if(!email || !email.includes('@')){ alert('올바른 이메일 주소를 입력해주세요.'); return; }
+    var nickname = (_currentData && _currentData.nickname) || '';
+    var btn = document.getElementById('my-link-send-btn');
+    if(btn){ btn.textContent='발송 중...'; btn.disabled=true; }
+    fetch(SERVER+'/api/my/send-link',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({name: nickname, email: email})
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(json){
+      if(json.ok){
+        _delBox().innerHTML =
+          '<div style="font-size:16px;font-weight:600;color:#2d2a22;margin-bottom:12px">✉️ 이메일을 보냈어요</div>'
+          +'<div style="font-size:13px;color:#6b6050;line-height:1.75;margin-bottom:20px">'
+          +esc(email)+'<br>위 주소로 기록 모음 링크를 보냈어요.</div>'
+          +'<button onclick="closeDeleteModal()" style="'+_BTN+'background:#C8870A;color:#FFF8ED">확인</button>';
+      } else {
+        if(btn){ btn.textContent='링크 받기'; btn.disabled=false; }
+        alert('오류가 발생했습니다. 다시 시도해주세요.');
+      }
+    })
+    .catch(function(){
+      if(btn){ btn.textContent='링크 받기'; btn.disabled=false; }
+      alert('네트워크 오류가 발생했어요.');
+    });
   };
 
   window.doDelete = function(){
