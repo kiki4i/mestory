@@ -349,7 +349,8 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
             tagline:'매일을 담아보세요.<br>모으면 그것이 당신이에요.',
             ctaTitle:'오늘 당신의 하루도<br>이야기가 될 수 있어요',
             ctaDesc:'사진과 짧은 글 한 줄 · 무료 · AI가 기억할 글로 담아드립니다',
-            ctaBtn:'나도 기록하기 →' },
+            ctaBtn:'나도 기록하기 →',
+            myLinkBtn:'📬 내 기록 모음 링크 받기' },
       en: { shots:"Today's Shots", word:'A Word for Today', verse:'A Poem for You',
             capsule:'A Message to Myself in a Year', capsulePh:'Short and honest', capsuleBtn:'Save',
             capsuleSent:'📮 Opens in a year', shareLabel:'My Mestory Link',
@@ -358,7 +359,8 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
             tagline:'Capture every day.<br>Together, they become you.',
             ctaTitle:'Your day can become<br>a story too',
             ctaDesc:'A photo and a short line · Free · AI will remember it for you',
-            ctaBtn:'Start My Story →' },
+            ctaBtn:'Start My Story →',
+            myLinkBtn:'📬 Get My Records Link' },
       ja: { shots:'今日の写真', word:'今日を表す一言', verse:'あなたへの詩',
             capsule:'1年後の自分へ一言', capsulePh:'短く、正直に', capsuleBtn:'保存',
             capsuleSent:'📮 1年後に開きます', shareLabel:'私のミストーリリンク',
@@ -367,7 +369,8 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
             tagline:'毎日を記録しよう。<br>積み重ねると、それがあなた。',
             ctaTitle:'あなたの今日も<br>ストーリーになれる',
             ctaDesc:'写真と短い一言 · 無料 · AIが記憶してくれます',
-            ctaBtn:'私も記録する →' },
+            ctaBtn:'私も記録する →',
+            myLinkBtn:'📬 記録リンクを受け取る' },
       zh: { shots:'今日照片', word:'今日一词', verse:'今日诗句',
             capsule:'给一年后的自己留言', capsulePh:'简短，真诚', capsuleBtn:'保存',
             capsuleSent:'📮 一年后开启', shareLabel:'我的Mestory链接',
@@ -376,7 +379,8 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
             tagline:'记录每一天。<br>积累起来，那就是你。',
             ctaTitle:'你的今天也可以<br>成为一个故事',
             ctaDesc:'一张照片和一句话 · 免费 · AI会为你记住',
-            ctaBtn:'我也来记录 →' }
+            ctaBtn:'我也来记录 →',
+            myLinkBtn:'📬 获取记录链接' }
     };
     window.selectLang = function(lang, el) {
     _ttsLang = lang;
@@ -426,6 +430,8 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     if(_ctad) _ctad.textContent = _lbl.ctaDesc;
     var _ctab = document.querySelector('.cta-btn');
     if(_ctab) _ctab.textContent = _lbl.ctaBtn;
+    var _mlb = document.getElementById('my-link-btn');
+    if(_mlb) _mlb.textContent = _lbl.myLinkBtn;
 
     if(lang === 'ko'){
       if(pd) pd.innerHTML = poemLinesHtml(_currentData.today_poem);
@@ -724,17 +730,18 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
       +'<div class="share-tagline" id="share-tagline">매일을 담아보세요.<br>모으면 그것이 당신이에요.</div>'
       +'</div>';
 
-    // 내 기록 모음 / 삭제 버튼 (CTA 위)
-    html += '<div style="text-align:center;padding:8px 40px 0">'
-      +'<button onclick="doSendMyLink()" style="background:none;border:none;font-size:13px;'
-      +'color:#C8870A;cursor:pointer;font-family:inherit;font-weight:500;'
-      +'text-decoration:underline;text-underline-offset:3px;letter-spacing:.02em">'
+    // 내 기록 모음 / 삭제 버튼 (CTA 위) — flex 좌우 배치
+    html += '<div style="display:flex;justify-content:center;align-items:center;padding:16px 24px 20px">'
+      +'<button id="my-link-btn" onclick="doSendMyLink()" style="background:none;border:none;'
+      +'font-size:13px;color:#C8870A;cursor:pointer;font-family:inherit;font-weight:500;'
+      +'text-decoration:underline;text-underline-offset:3px;letter-spacing:.02em;'
+      +'padding:12px 20px;min-height:44px">'
       +'📬 내 기록 모음 링크 받기</button>'
-      +'</div>';
-    html += '<div style="text-align:center;padding:4px 40px 20px">'
-      +'<button id="delete-btn" onclick="doDelete()" style="background:none;border:none;font-size:13px;'
-      +'color:#e53e3e;cursor:pointer;font-family:inherit;font-weight:500;'
-      +'text-decoration:underline;text-underline-offset:3px;letter-spacing:.02em">'
+      +'<div style="width:1px;height:16px;background:#d4cfc7;flex-shrink:0"></div>'
+      +'<button id="delete-btn" onclick="doDelete()" style="background:none;border:none;'
+      +'font-size:13px;color:#e53e3e;cursor:pointer;font-family:inherit;font-weight:500;'
+      +'text-decoration:underline;text-underline-offset:3px;letter-spacing:.02em;'
+      +'padding:12px 20px;min-height:44px">'
       +'이 기록 삭제</button>'
       +'</div>';
 
