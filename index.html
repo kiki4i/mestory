@@ -633,7 +633,7 @@ async function doSubmit() {
         }),
         today_sentence: msg,
         genre: selectedGenre,
-        lang: 'ko',
+        lang: currentLang,
       }),
     });
     var data = await res.json();
