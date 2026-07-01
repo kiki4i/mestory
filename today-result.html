@@ -753,6 +753,17 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     document.getElementById('loading').style.display = 'none';
     document.getElementById('main').style.display = 'block';
 
+    // Auto-apply submission language (index.html sends 'jp'; result page uses 'ja')
+    var _storedLang = (data.lang || 'ko').toLowerCase();
+    var _langAlias = {jp: 'ja'};
+    var _tabLang = _langAlias[_storedLang] || _storedLang;
+    if (_tabLang !== 'ko') {
+      document.querySelectorAll('.lang-tab').forEach(function(btn) {
+        var m = btn.getAttribute('onclick') && btn.getAttribute('onclick').match(/selectLang\('(\w+)'/);
+        if (m && m[1] === _tabLang) selectLang(_tabLang, btn);
+      });
+    }
+
     if(window.Kakao && !Kakao.isInitialized()){
       Kakao.init('5b7821698a09c74f1d72c0b52165d557');
     }

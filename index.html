@@ -329,12 +329,32 @@ const TODAY_I18N = {
     },
   },
 };
-const LD_MSGS = [
-  'AI가 사진을 읽고 있어요...',
-  '오늘 하루의 장면을 이어붙이는 중이에요.',
-  '오늘의 감정을 시로 옮기고 있어요.',
-  '마지막 줄을 고르고 있어요...',
-];
+const LD_MSGS_I18N = {
+  ko: [
+    'AI가 사진을 읽고 있어요...',
+    '오늘 하루의 장면을 이어붙이는 중이에요.',
+    '오늘의 감정을 시로 옮기고 있어요.',
+    '마지막 줄을 고르고 있어요...',
+  ],
+  en: [
+    'AI is reading your photos...',
+    'Connecting the scenes of your day.',
+    "Turning today's feelings into poetry.",
+    'Choosing the last line...',
+  ],
+  jp: [
+    'AIが写真を読んでいます...',
+    '今日の場面をつなぎ合わせています。',
+    '今日の感情を詩に変えています。',
+    '最後の行を選んでいます...',
+  ],
+  zh: [
+    'AI正在读取您的照片...',
+    '正在拼接今天的场景。',
+    '正在将今天的感情转化成诗。',
+    '正在选择最后一行...',
+  ],
+};
 
 let photos = [];        // [{b64, caption}]
 let currentSlide = 0;
@@ -519,8 +539,8 @@ function buildLoading() {
   const d = mkEl('div', 'slide', 'slide-loading');
   d.innerHTML =
     '<div id="ld-photos"></div>' +
-    '<div id="ld-spinner-wrap"><div class="ld-spinner"></div><div class="ld-spinner-txt">AI가 사진을 읽고 있어요...</div></div>' +
-    '<div id="ld-bottom"><div class="ld-tag">TODAY FILMOGRAPHY</div><div class="ld-msg" id="ld-msg">' + LD_MSGS[0] + '</div></div>';
+    '<div id="ld-spinner-wrap"><div class="ld-spinner"></div><div class="ld-spinner-txt">' + (LD_MSGS_I18N[currentLang] || LD_MSGS_I18N.ko)[0] + '</div></div>' +
+    '<div id="ld-bottom"><div class="ld-tag">TODAY FILMOGRAPHY</div><div class="ld-msg" id="ld-msg">' + (LD_MSGS_I18N[currentLang] || LD_MSGS_I18N.ko)[0] + '</div></div>';
   return d;
 }
 
@@ -679,8 +699,9 @@ function startLoading() {
     if (!el) return;
     el.classList.add('fade');
     setTimeout(function(){
-      msgIdx = (msgIdx + 1) % LD_MSGS.length;
-      el.textContent = LD_MSGS[msgIdx];
+      var _ldMsgs = LD_MSGS_I18N[currentLang] || LD_MSGS_I18N.ko;
+      msgIdx = (msgIdx + 1) % _ldMsgs.length;
+      el.textContent = _ldMsgs[msgIdx];
       el.classList.remove('fade');
     }, 450);
   }, 3000);
