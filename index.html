@@ -203,6 +203,132 @@ const GENRES = [
   {id:'병맛 코미디',icon:'😂', name:'병맛 코미디',sub:'이게 내 인생이다',  color:'#C85E12'},
   {id:'반전 스릴러',icon:'😱', name:'반전 스릴러',sub:'예상 못한 하루였다', color:'#5C2873'},
 ];
+const TODAY_I18N = {
+  ko: {
+    captionPh:'이 순간을 한 줄로...',
+    prevBtn:'← 이전', nextBtn:'다음 →',
+    addCounter:'오늘 기록 완성',
+    addMoreLabel:'사진 더 추가하기',
+    addCount:'최대 {n}장 더 추가 가능',
+    addBtn:'📸 사진 추가',
+    addFullLabel:'사진 6장 완성!',
+    addFinishBtn:'이대로 완성하기 →',
+    finTitle:'마무리',
+    nickLabel:'닉네임', nickOpt:'선택 · AI가 시 쓸 때 참고해요',
+    nickPh:'월요일의 곰, 커피충전중...',
+    emailLabel:'이메일 *', emailPh:'your@email.com',
+    msgLabel:'오늘 한 마디', msgOpt:'선택',
+    msgPh:'오늘 하루를 한 마디로...',
+    extraLabel:'더 남기고 싶은 이야기', extraOpt:'선택',
+    extraPh:'더 남기고 싶은 이야기가 있다면... 진짜 일기가 될 수 있어요',
+    visLabel:'공개 여부',
+    pubBtn:'공개 · 다른 사람들도 볼 수 있어요',
+    prvBtn:'비공개 · 나만 볼 수 있어요',
+    genreTitle:'🎬 오늘 하루의 장르 *',
+    submitBtn:'완성하기 →',
+    genres:{
+      '감동명작':   {name:'감동명작',   sub:'오늘이 영화라면'},
+      '히어로 액션':{name:'히어로 액션',sub:'나는 오늘도 싸웠다'},
+      '잔잔한 다큐':{name:'잔잔한 다큐',sub:'평범한 하루의 기록'},
+      '멜로 로맨스':{name:'멜로 로맨스',sub:'오늘의 감정선'},
+      '병맛 코미디':{name:'병맛 코미디',sub:'이게 내 인생이다'},
+      '반전 스릴러':{name:'반전 스릴러',sub:'예상 못한 하루였다'},
+    },
+  },
+  en: {
+    captionPh:'A line for this moment...',
+    prevBtn:'← Prev', nextBtn:'Next →',
+    addCounter:'Record complete',
+    addMoreLabel:'Add more photos',
+    addCount:'Up to {n} more',
+    addBtn:'📸 Add Photo',
+    addFullLabel:'6 photos complete!',
+    addFinishBtn:'Finish →',
+    finTitle:'Finish',
+    nickLabel:'Nickname', nickOpt:'Optional · AI uses this for poems',
+    nickPh:'monday bear, coffee addict...',
+    emailLabel:'Email *', emailPh:'your@email.com',
+    msgLabel:"Today's Note", msgOpt:'Optional',
+    msgPh:'Summarize your day in one line...',
+    extraLabel:'More to share', extraOpt:'Optional',
+    extraPh:'Anything else to add... it can become a real diary',
+    visLabel:'Visibility',
+    pubBtn:'Public · Others can see this',
+    prvBtn:'Private · Only you can see',
+    genreTitle:"🎬 Today's Genre *",
+    submitBtn:'Submit →',
+    genres:{
+      '감동명작':   {name:'Touching Drama',    sub:'If today were a movie'},
+      '히어로 액션':{name:'Hero Action',       sub:'I fought again today'},
+      '잔잔한 다큐':{name:'Calm Documentary',  sub:'A record of an ordinary day'},
+      '멜로 로맨스':{name:'Melo Romance',      sub:"Today's emotional thread"},
+      '병맛 코미디':{name:'Absurd Comedy',     sub:'This is my life'},
+      '반전 스릴러':{name:'Twist Thriller',    sub:'An unexpected day'},
+    },
+  },
+  jp: {
+    captionPh:'この瞬間を一言で...',
+    prevBtn:'← 前へ', nextBtn:'次へ →',
+    addCounter:'今日の記録',
+    addMoreLabel:'写真を追加する',
+    addCount:'あと{n}枚追加できます',
+    addBtn:'📸 写真を追加',
+    addFullLabel:'写真6枚完成！',
+    addFinishBtn:'このまま完成する →',
+    finTitle:'まとめ',
+    nickLabel:'ニックネーム', nickOpt:'任意 · AIが詩を書く際に参考にします',
+    nickPh:'月曜日のクマ、コーヒー補充中...',
+    emailLabel:'メール *', emailPh:'your@email.com',
+    msgLabel:'今日の一言', msgOpt:'任意',
+    msgPh:'今日を一言で...',
+    extraLabel:'もっと残したいこと', extraOpt:'任意',
+    extraPh:'もっと残したいことがあれば... 本物の日記になれます',
+    visLabel:'公開設定',
+    pubBtn:'公開 · 他の人も見られます',
+    prvBtn:'非公開 · 自分だけ見られます',
+    genreTitle:'🎬 今日のジャンル *',
+    submitBtn:'完成する →',
+    genres:{
+      '감동명작':   {name:'感動名作',              sub:'今日が映画なら'},
+      '히어로 액션':{name:'ヒーローアクション',    sub:'今日も戦った'},
+      '잔잔한 다큐':{name:'静かなドキュメンタリー',sub:'普通の一日の記録'},
+      '멜로 로맨스':{name:'メロロマンス',          sub:'今日の感情線'},
+      '병맛 코미디':{name:'シュールコメディ',      sub:'これが私の人生だ'},
+      '반전 스릴러':{name:'どんでん返しスリラー',  sub:'予想外の一日だった'},
+    },
+  },
+  zh: {
+    captionPh:'用一句话记录这一刻...',
+    prevBtn:'← 上一张', nextBtn:'下一张 →',
+    addCounter:'今日记录',
+    addMoreLabel:'添加更多照片',
+    addCount:'还可以添加{n}张',
+    addBtn:'📸 添加照片',
+    addFullLabel:'6张照片完成！',
+    addFinishBtn:'就这样完成 →',
+    finTitle:'完成',
+    nickLabel:'昵称', nickOpt:'可选 · AI写诗时参考',
+    nickPh:'周一的熊，充电中...',
+    emailLabel:'邮箱 *', emailPh:'your@email.com',
+    msgLabel:'今日一言', msgOpt:'可选',
+    msgPh:'用一句话总结今天...',
+    extraLabel:'更多想说的话', extraOpt:'可选',
+    extraPh:'还有什么想说的... 可以成为真正的日记',
+    visLabel:'可见性',
+    pubBtn:'公开 · 其他人也可以看到',
+    prvBtn:'私密 · 只有你能看到',
+    genreTitle:'🎬 今天的类型 *',
+    submitBtn:'完成 →',
+    genres:{
+      '감동명작':   {name:'感动名作',  sub:'如果今天是电影'},
+      '히어로 액션':{name:'英雄动作',  sub:'今天我也战斗了'},
+      '잔잔한 다큐':{name:'平静纪录片',sub:'平凡一天的记录'},
+      '멜로 로맨스':{name:'浪漫爱情',  sub:'今天的情感线'},
+      '병맛 코미디':{name:'荒诞喜剧',  sub:'这就是我的人生'},
+      '반전 스릴러':{name:'反转惊悚',  sub:'意想不到的一天'},
+    },
+  },
+};
 const LD_MSGS = [
   'AI가 사진을 읽고 있어요...',
   '오늘 하루의 장면을 이어붙이는 중이에요.',
@@ -263,14 +389,14 @@ function buildPhoto(i) {
   const d = mkEl('div', 'slide slide-photo');
   const n = photos.length;
   const isLast = (i === n - 1);
+  const L = TODAY_I18N[currentLang] || TODAY_I18N.ko;
   d.innerHTML =
-    
     '<div class="sp-img-wrap"><img src="' + photos[i].b64 + '" alt="사진 ' + (i+1) + '"></div>' +
     '<div class="sp-bottom">' +
-      '<textarea class="sp-caption" id="cap' + i + '" rows="3" placeholder="이 순간을 한 줄로...">' + esc(photos[i].caption) + '</textarea>' +
+      '<textarea class="sp-caption" id="cap' + i + '" rows="3" placeholder="' + L.captionPh + '">' + esc(photos[i].caption) + '</textarea>' +
       '<div class="sp-nav">' +
-        '<button class="sp-btn sp-btn-prev" data-idx="' + i + '">← 이전</button>' +
-        '<button class="sp-btn sp-btn-next" data-idx="' + i + '">다음 →</button>' +
+        '<button class="sp-btn sp-btn-prev" data-idx="' + i + '">' + L.prevBtn + '</button>' +
+        '<button class="sp-btn sp-btn-next" data-idx="' + i + '">' + L.nextBtn + '</button>' +
       '</div>' +
     '</div>';
   d.querySelector('#cap' + i).oninput = function(){ photos[i].caption = this.value; };
@@ -289,18 +415,19 @@ function buildAdd() {
   var n = photos.length;
   var canAdd = n < 6;
   var d = mkEl('div', 'slide slide-add');
+  var L = TODAY_I18N[currentLang] || TODAY_I18N.ko;
   d.innerHTML =
-    '<div class="sp-counter">' + n + ' / ' + n + ' · 오늘 기록 완성</div>' +
+    '<div class="sp-counter">' + n + ' / ' + n + ' · ' + L.addCounter + '</div>' +
     '<div class="add-inner">' +
       (canAdd
         ? '<div class="add-icon">+</div>' +
-          '<div class="add-label">사진 더 추가하기</div>' +
-          '<div class="add-count">최대 ' + (6 - n) + '장 더 추가 가능</div>' +
-          '<button class="add-btn" id="add-photo-btn">📸 사진 추가</button>'
+          '<div class="add-label">' + L.addMoreLabel + '</div>' +
+          '<div class="add-count">' + L.addCount.replace('{n}', 6 - n) + '</div>' +
+          '<button class="add-btn" id="add-photo-btn">' + L.addBtn + '</button>'
         : '<div class="add-icon">✓</div>' +
-          '<div class="add-label">사진 6장 완성!</div>'
+          '<div class="add-label">' + L.addFullLabel + '</div>'
       ) +
-      '<button class="add-finish" id="add-finish-btn">이대로 완성하기 →</button>' +
+      '<button class="add-finish" id="add-finish-btn">' + L.addFinishBtn + '</button>' +
     '</div>';
   if (canAdd) {
     d.querySelector('#add-photo-btn').onclick = function(){
@@ -316,34 +443,36 @@ function buildAdd() {
 function buildFinish() {
   const saved = lsLoad();
   const d = mkEl('div', 'slide', 'slide-finish');
+  const L = TODAY_I18N[currentLang] || TODAY_I18N.ko;
   d.innerHTML =
-    '<div class="fin-title">마무리</div>' +
-    '<div class="fin-field"><div class="fin-label">닉네임 <span style="opacity:.5;font-weight:400">선택 · AI가 시 쓸 때 참고해요</span></div>' +
-      '<input id="f-nickname" type="text" class="fin-input" placeholder="월요일의 곰, 커피충전중..." maxlength="20" value="' + esc(saved.nickname||'') + '"></div>' +
-    '<div class="fin-field"><div class="fin-label">이메일 *</div>' +
-      '<input id="f-email" type="email" class="fin-input" placeholder="your@email.com" autocomplete="email" value="' + esc(saved.email||'') + '"></div>' +
-    '<div class="fin-field"><div class="fin-label">오늘 한 마디 <span style="opacity:.5;font-weight:400">선택</span></div>' +
-      '<textarea id="f-msg" class="fin-textarea" rows="2" placeholder="오늘 하루를 한 마디로..."></textarea></div>' +
-    '<div class="fin-field"><div class="fin-label">더 남기고 싶은 이야기 <span style="opacity:.5;font-weight:400">선택</span></div>' +
-      '<textarea id="f-extra" class="fin-textarea" rows="3" placeholder="더 남기고 싶은 이야기가 있다면... 진짜 일기가 될 수 있어요"></textarea></div>' +
+    '<div class="fin-title">' + L.finTitle + '</div>' +
+    '<div class="fin-field"><div class="fin-label">' + L.nickLabel + ' <span style="opacity:.5;font-weight:400">' + L.nickOpt + '</span></div>' +
+      '<input id="f-nickname" type="text" class="fin-input" placeholder="' + L.nickPh + '" maxlength="20" value="' + esc(saved.nickname||'') + '"></div>' +
+    '<div class="fin-field"><div class="fin-label">' + L.emailLabel + '</div>' +
+      '<input id="f-email" type="email" class="fin-input" placeholder="' + L.emailPh + '" autocomplete="email" value="' + esc(saved.email||'') + '"></div>' +
+    '<div class="fin-field"><div class="fin-label">' + L.msgLabel + ' <span style="opacity:.5;font-weight:400">' + L.msgOpt + '</span></div>' +
+      '<textarea id="f-msg" class="fin-textarea" rows="2" placeholder="' + L.msgPh + '"></textarea></div>' +
+    '<div class="fin-field"><div class="fin-label">' + L.extraLabel + ' <span style="opacity:.5;font-weight:400">' + L.extraOpt + '</span></div>' +
+      '<textarea id="f-extra" class="fin-textarea" rows="3" placeholder="' + L.extraPh + '"></textarea></div>' +
     '<div class="fin-field">' +
-      '<div class="fin-label">공개 여부</div>' +
+      '<div class="fin-label">' + L.visLabel + '</div>' +
       '<div class="fin-public-wrap" id="fin-public-wrap">' +
-        '<button class="fin-pub-btn active" id="pub-yes" type="button">공개 · 다른 사람들도 볼 수 있어요</button>' +
-        '<button class="fin-pub-btn" id="pub-no" type="button">비공개 · 나만 볼 수 있어요</button>' +
+        '<button class="fin-pub-btn active" id="pub-yes" type="button">' + L.pubBtn + '</button>' +
+        '<button class="fin-pub-btn" id="pub-no" type="button">' + L.prvBtn + '</button>' +
       '</div>' +
     '</div>' +
-    '<div class="fin-genre-title">🎬 오늘 하루의 장르 *</div>' +
+    '<div class="fin-genre-title">' + L.genreTitle + '</div>' +
     '<div class="fin-genre-grid" id="genre-grid">' +
       GENRES.map(function(g){
+        var GL = L.genres[g.id] || {name: g.name, sub: g.sub};
         return '<div class="fin-genre-card" data-genre="' + g.id + '" data-color="' + g.color + '">' +
           '<span class="fin-genre-icon">' + g.icon + '</span>' +
-          '<span class="fin-genre-name">' + g.name + '</span>' +
-          '<span class="fin-genre-sub">' + g.sub + '</span>' +
+          '<span class="fin-genre-name">' + GL.name + '</span>' +
+          '<span class="fin-genre-sub">' + GL.sub + '</span>' +
           '</div>';
       }).join('') +
     '</div>' +
-    '<button class="fin-submit" id="fin-submit" disabled>완성하기 →</button>';
+    '<button class="fin-submit" id="fin-submit" disabled>' + L.submitBtn + '</button>';
 
   // 공개/비공개 버튼
   var isPublicVal = true;
