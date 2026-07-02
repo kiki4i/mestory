@@ -38,15 +38,17 @@ input,textarea{-webkit-user-select:text;user-select:text}
   transition:background .2s}
 #top-nav.light-nav{background:transparent}
 #nav-feed:active{opacity:.6}
-#nav-langs{display:flex;gap:4px;flex-wrap:nowrap}
+#nav-langs{display:flex;gap:6px;flex-wrap:nowrap;padding:5px;border-radius:12px;
+  background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.18)}
 .nav-lang{display:inline-flex;align-items:center;background:transparent;
-  border:1px solid rgba(255,255,255,.25);color:#fff;
-  font-size:11px;font-family:inherit;border-radius:6px;letter-spacing:.06em;font-weight:500;
-  padding:4px 7px;cursor:pointer;transition:all .15s;line-height:1}
+  border:1px solid rgba(255,255,255,.35);color:#fff;
+  font-size:14px;font-family:inherit;border-radius:8px;letter-spacing:.06em;font-weight:600;
+  padding:8px 14px;cursor:pointer;transition:all .15s;line-height:1}
 .nav-lang:active{opacity:.6}
 .nav-lang.active{background:#C8870A;border-color:#C8870A;color:#fff}
 
-#top-nav.light-nav .nav-lang{border-color:rgba(23,52,4,.2);color:#3B6D11}
+#top-nav.light-nav #nav-langs{background:rgba(255,255,255,.35);border-color:rgba(23,52,4,.15)}
+#top-nav.light-nav .nav-lang{border-color:rgba(23,52,4,.3);color:#3B6D11}
 #top-nav.light-nav .nav-lang.active{background:#27500A;border-color:#27500A;color:#EAF3DE}
 
 /* ── Progress bar ── */
@@ -179,10 +181,8 @@ input,textarea{-webkit-user-select:text;user-select:text}
 <div id="top-nav">
   
   <div id="nav-langs">
-    <button class="nav-lang active" data-lang="ko">KO</button>
+    <button class="nav-lang active" data-lang="ko">한글</button>
     <button class="nav-lang" data-lang="en">EN</button>
-    <button class="nav-lang" data-lang="jp">JP</button>
-    <button class="nav-lang" data-lang="zh">ZH</button>
   </div>
 </div>
 <div id="prog-bar"><div id="prog-fill"></div></div>
@@ -266,68 +266,6 @@ const TODAY_I18N = {
       '반전 스릴러':{name:'Twist Thriller',    sub:'An unexpected day'},
     },
   },
-  jp: {
-    captionPh:'この瞬間を一言で...',
-    prevBtn:'← 前へ', nextBtn:'次へ →',
-    addCounter:'今日の記録',
-    addMoreLabel:'写真を追加する',
-    addCount:'あと{n}枚追加できます',
-    addBtn:'📸 写真を追加',
-    addFullLabel:'写真6枚完成！',
-    addFinishBtn:'このまま完成する →',
-    finTitle:'まとめ',
-    nickLabel:'ニックネーム', nickOpt:'任意 · AIが詩を書く際に参考にします',
-    nickPh:'月曜日のクマ、コーヒー補充中...',
-    emailLabel:'メール *', emailPh:'your@email.com',
-    msgLabel:'今日の一言', msgOpt:'任意',
-    msgPh:'今日を一言で...',
-    extraLabel:'もっと残したいこと', extraOpt:'任意',
-    extraPh:'もっと残したいことがあれば... 本物の日記になれます',
-    visLabel:'公開設定',
-    pubBtn:'公開 · 他の人も見られます',
-    prvBtn:'非公開 · 自分だけ見られます',
-    genreTitle:'🎬 今日のジャンル *',
-    submitBtn:'完成する →',
-    genres:{
-      '감동명작':   {name:'感動名作',              sub:'今日が映画なら'},
-      '히어로 액션':{name:'ヒーローアクション',    sub:'今日も戦った'},
-      '잔잔한 다큐':{name:'静かなドキュメンタリー',sub:'普通の一日の記録'},
-      '멜로 로맨스':{name:'メロロマンス',          sub:'今日の感情線'},
-      '병맛 코미디':{name:'シュールコメディ',      sub:'これが私の人生だ'},
-      '반전 스릴러':{name:'どんでん返しスリラー',  sub:'予想外の一日だった'},
-    },
-  },
-  zh: {
-    captionPh:'用一句话记录这一刻...',
-    prevBtn:'← 上一张', nextBtn:'下一张 →',
-    addCounter:'今日记录',
-    addMoreLabel:'添加更多照片',
-    addCount:'还可以添加{n}张',
-    addBtn:'📸 添加照片',
-    addFullLabel:'6张照片完成！',
-    addFinishBtn:'就这样完成 →',
-    finTitle:'完成',
-    nickLabel:'昵称', nickOpt:'可选 · AI写诗时参考',
-    nickPh:'周一的熊，充电中...',
-    emailLabel:'邮箱 *', emailPh:'your@email.com',
-    msgLabel:'今日一言', msgOpt:'可选',
-    msgPh:'用一句话总结今天...',
-    extraLabel:'更多想说的话', extraOpt:'可选',
-    extraPh:'还有什么想说的... 可以成为真正的日记',
-    visLabel:'可见性',
-    pubBtn:'公开 · 其他人也可以看到',
-    prvBtn:'私密 · 只有你能看到',
-    genreTitle:'🎬 今天的类型 *',
-    submitBtn:'完成 →',
-    genres:{
-      '감동명작':   {name:'感动名作',  sub:'如果今天是电影'},
-      '히어로 액션':{name:'英雄动作',  sub:'今天我也战斗了'},
-      '잔잔한 다큐':{name:'平静纪录片',sub:'平凡一天的记录'},
-      '멜로 로맨스':{name:'浪漫爱情',  sub:'今天的情感线'},
-      '병맛 코미디':{name:'荒诞喜剧',  sub:'这就是我的人生'},
-      '반전 스릴러':{name:'反转惊悚',  sub:'意想不到的一天'},
-    },
-  },
 };
 const LD_MSGS_I18N = {
   ko: [
@@ -341,18 +279,6 @@ const LD_MSGS_I18N = {
     'Connecting the scenes of your day.',
     "Turning today's feelings into poetry.",
     'Choosing the last line...',
-  ],
-  jp: [
-    'AIが写真を読んでいます...',
-    '今日の場面をつなぎ合わせています。',
-    '今日の感情を詩に変えています。',
-    '最後の行を選んでいます...',
-  ],
-  zh: [
-    'AI正在读取您的照片...',
-    '正在拼接今天的场景。',
-    '正在将今天的感情转化成诗。',
-    '正在选择最后一行...',
   ],
 };
 
@@ -392,13 +318,13 @@ function buildStart() {
       '</div>' +
       '<div style="font-size:10px;letter-spacing:4px;color:#639922;font-weight:400;margin-top:6px;">MESTORY</div>' +
       '<div class="s0-divider"></div>' +
-      '<div class="s0-copy" data-ko="사진과 짧은 글.\n오늘이 특별한 기억으로\n남겨집니다." data-en="A photo and a short note.\nYour today becomes\na special memory." data-jp="写真と短いメモ。\n今日が特別な記憶として\n残ります。" data-zh="一张照片，一句话。\n今天成为\n特别的记忆。">사진과 짧은 글.<br>오늘이 특별한 기억으로<br>남겨집니다.</div>' +
+      '<div class="s0-copy" data-ko="사진과 짧은 글.\n오늘이 특별한 기억으로\n남겨집니다." data-en="A photo and a short note.\nYour today becomes\na special memory.">사진과 짧은 글.<br>오늘이 특별한 기억으로<br>남겨집니다.</div>' +
     '</div>' +
     '<div class="s0-btn-row">' +
-      '<button class="s0-btn s0-btn-start" id="s0-pick" data-ko="시작하기" data-en="Start" data-jp="はじめる" data-zh="开始">시작하기</button>' +
-      '<button class="s0-btn s0-btn-history" id="my-history-btn" data-ko="내 기록 보기" data-en="My Records" data-jp="記録を見る" data-zh="我的记录">내 기록 보기</button>' +
+      '<button class="s0-btn s0-btn-start" id="s0-pick" data-ko="시작하기" data-en="Start">시작하기</button>' +
+      '<button class="s0-btn s0-btn-history" id="my-history-btn" data-ko="내 기록 보기" data-en="My Records">내 기록 보기</button>' +
     '</div>' +
-    '<button id="browse-open" class="s0-browse-btn" data-ko="다른 사람의 오늘 보기 →" data-en="See Others\' Today →" data-jp="みんなの今日 →" data-zh="看看别人的今天 →">다른 사람의 오늘 보기 →</button>';
+    '<button id="browse-open" class="s0-browse-btn" data-ko="다른 사람의 오늘 보기 →" data-en="See Others\' Today →">다른 사람의 오늘 보기 →</button>';
   d.querySelector('#s0-pick').onclick = function(){ document.getElementById('file-input').click(); };
   d.querySelector('#my-history-btn').onclick = function(){ if(window.__openMyModal) window.__openMyModal(); };
   d.querySelector('#browse-open').onclick = function(){ if(window.__openFeed) window.__openFeed(); };
@@ -556,7 +482,10 @@ function goSlide(n, anim) {
 
 // ── 언어 전환 시스템 ──────────────────────────────────
 var currentLang = (function(){
-  try { return localStorage.getItem('mestory_lang') || 'ko'; } catch(e){ return 'ko'; }
+  try {
+    var v = localStorage.getItem('mestory_lang');
+    return (v === 'en') ? 'en' : 'ko';   // jp/zh였던 값은 ko로 안전하게 폴백
+  } catch(e){ return 'ko'; }
 })();
 
 function applyLang(lang) {

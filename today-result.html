@@ -86,8 +86,9 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
   .shot-body{padding:20px}
   .last-msg{margin:24px 0;padding:20px}
 }
-.lang-tabs{display:flex;gap:4px}
-.lang-tab{padding:4px 10px;border:1px solid #c8a96e;background:transparent;border-radius:20px;font-size:11px;color:#9e8250;cursor:pointer;font-family:inherit;letter-spacing:.05em;transition:background .15s,color .15s}
+.lang-tabs{display:flex;gap:6px}
+#lang-bar{padding:5px;border-radius:14px;background:rgba(15,13,9,.55);border:1px solid rgba(200,169,110,.35)}
+.lang-tab{padding:8px 16px;border:1px solid #c8a96e;background:transparent;border-radius:20px;font-size:14px;font-weight:600;color:#9e8250;cursor:pointer;font-family:inherit;letter-spacing:.05em;transition:background .15s,color .15s}
 .lang-tab.active{background:#c8a96e;color:#fff;border-color:#c8a96e}
 .lang-tab-off{opacity:.35;cursor:not-allowed}
 .play-btn{padding:10px 28px;background:#27500A;border:none;border-radius:20px;font-size:13px;color:#EAF3DE;cursor:pointer;font-family:inherit;letter-spacing:.05em;transition:opacity .15s}
@@ -104,10 +105,8 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
 </head>
 <body>
 <div id="lang-bar" style="position:fixed;top:10px;right:12px;z-index:9999;display:flex;gap:4px;">
-  <button class="lang-tab active" onclick="selectLang('ko',this)">KO</button>
+  <button class="lang-tab active" onclick="selectLang('ko',this)">한글</button>
   <button class="lang-tab" onclick="selectLang('en',this)">EN</button>
-  <button class="lang-tab" onclick="selectLang('ja',this)">JP</button>
-  <button class="lang-tab" onclick="selectLang('zh',this)">ZH</button>
 </div>
 
 <div id="loading">
@@ -162,8 +161,6 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     var map = {
       ko: data.today_poem || '',
       en: data.today_poem_en || data.today_poem || '',
-      ja: data.today_poem_ja || data.today_poem || '',
-      zh: data.today_poem_zh || data.today_poem || '',
     };
     return map[lang] || data.today_poem || '';
   }
@@ -178,8 +175,6 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
       var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
       return months[mo-1] + ' ' + d + ', ' + y;
     }
-    if (lang === 'ja') return y + '年' + mo + '月' + d + '日';
-    if (lang === 'zh') return y + '年' + mo + '月' + d + '日';
     return '';
   }
 
@@ -296,7 +291,7 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     // 인트로 화면 (1.5초)
     var nick = (_currentData && _currentData.nickname) || '';
     var date = _currentData ? _formatDate(_currentData.created_at, _ttsLang) : '';
-    var introLabel = {ko:'오늘을 담은 시', en:'A Poem for Today', ja:'今日を詠んだ詩', zh:'今日之诗'}[_ttsLang] || '오늘을 담은 시';
+    var introLabel = {ko:'오늘을 담은 시', en:'A Poem for Today'}[_ttsLang] || '오늘을 담은 시';
     _ssShowText(
       '<div style="color:rgba(200,169,110,.65);font-size:10px;letter-spacing:.3em;margin-bottom:22px">MESTORY</div>'
       + (nick ? '<div style="font-family:Georgia,serif;font-size:30px;color:#f9f6f0;font-weight:300;margin-bottom:10px">' + esc(nick) + '</div>' : '')
@@ -360,27 +355,7 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
             ctaTitle:'Your day can become<br>a story too',
             ctaDesc:'A photo and a short line · Free · AI will remember it for you',
             ctaBtn:'Start My Story →',
-            myLinkBtn:'📬 Get My Records Link' },
-      ja: { shots:'今日の写真', word:'今日を表す一言', verse:'あなたへの詩',
-            capsule:'1年後の自分へ一言', capsulePh:'短く、正直に', capsuleBtn:'保存',
-            capsuleSent:'📮 1年後に開きます', shareLabel:'私のミストーリリンク',
-            copyBtn:'🔗 リンクをコピー', slideBtn:'▶ スライドショー', deleteBtn:'この記録を削除',
-            poemSection:'✦ 今日を詠んだ詩',
-            tagline:'毎日を記録しよう。<br>積み重ねると、それがあなた。',
-            ctaTitle:'あなたの今日も<br>ストーリーになれる',
-            ctaDesc:'写真と短い一言 · 無料 · AIが記憶してくれます',
-            ctaBtn:'私も記録する →',
-            myLinkBtn:'📬 記録リンクを受け取る' },
-      zh: { shots:'今日照片', word:'今日一词', verse:'今日诗句',
-            capsule:'给一年后的自己留言', capsulePh:'简短，真诚', capsuleBtn:'保存',
-            capsuleSent:'📮 一年后开启', shareLabel:'我的Mestory链接',
-            copyBtn:'🔗 复制链接', slideBtn:'▶ 幻灯片', deleteBtn:'删除此记录',
-            poemSection:'✦ 今日之诗',
-            tagline:'记录每一天。<br>积累起来，那就是你。',
-            ctaTitle:'你的今天也可以<br>成为一个故事',
-            ctaDesc:'一张照片和一句话 · 免费 · AI会为你记住',
-            ctaBtn:'我也来记录 →',
-            myLinkBtn:'📬 获取记录链接' }
+            myLinkBtn:'📬 Get My Records Link' }
     };
     window.selectLang = function(lang, el) {
     _ttsLang = lang;
@@ -404,7 +379,7 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     var tgl = document.getElementById('share-tagline');
     if(tgl) tgl.innerHTML = _lbl.tagline;
     document.querySelectorAll('.section-label').forEach(function(el){
-      if(el.textContent.trim().match(/오늘의 사진들|Today.s Shots|今日の写真|今日照片/)) el.textContent = _lbl.shots;
+      if(el.textContent.trim().match(/오늘의 사진들|Today.s Shots/)) el.textContent = _lbl.shots;
     });
     var _wl = document.querySelector('.today-word-label');
     if(_wl) _wl.textContent = _lbl.word;
@@ -441,7 +416,7 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
       });
       // ko 레이블 복원
       document.querySelectorAll('.section-label').forEach(function(el){
-        if(el.textContent.trim().match(/Today|今日の写真|今日照片|shots/i)) el.textContent = '오늘의 사진들';
+        if(el.textContent.trim().match(/Today|shots/i)) el.textContent = '오늘의 사진들';
       });
       if(_wl) _wl.textContent = '오늘을 표현한 한 마디';
       if(_vl) _vl.textContent = '오늘 당신을 위한 시';
@@ -452,7 +427,7 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     if(cached && cached !== _currentData.today_poem){
       if(pd) pd.innerHTML = poemLinesHtml(cached);
       (_currentData.shots||[]).forEach(function(s,i){
-        var sp = lang==='en'?s.poem_en:(lang==='ja'?s.poem_ja:s.poem_zh);
+        var sp = s.poem_en;
         if(sp){
           var els = document.querySelectorAll('.shot-poem-line[data-idx="'+i+'"]');
           els.forEach(function(e){ e.innerHTML = sp.trim().split('\n').filter(function(l){return l.trim();}).map(function(l){return esc(l);}).join('<br>'); });
@@ -462,7 +437,7 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     }
 
     if(pd) pd.innerHTML = '<div style="text-align:center;padding:16px;color:#aaa;font-size:12px">번역 중...</div>';
-    var langMap = {en:'en', ja:'jp', zh:'zh'};
+    var langMap = {en:'en'};
     var texts = {poem: _currentData.today_poem};
     if(_currentData.reflection) texts.reflection = _currentData.reflection;
     if(_currentData.tomorrow_question) texts.tomorrow_question = _currentData.tomorrow_question;
@@ -479,16 +454,12 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
         var t = j.translations && j.translations.poem;
         if(t){
           if(lang==='en') _currentData.today_poem_en = t;
-          if(lang==='ja') _currentData.today_poem_ja = t;
-          if(lang==='zh') _currentData.today_poem_zh = t;
           if(pd) pd.innerHTML = poemLinesHtml(t);
         } else { if(pd) pd.innerHTML = poemLinesHtml(_currentData.today_poem); }
         (_currentData.shots||[]).forEach(function(s,i){
           var t2 = j.translations && j.translations['shot'+i];
           if(t2){
             if(lang==='en') s.poem_en = t2;
-            if(lang==='ja') s.poem_ja = t2;
-            if(lang==='zh') s.poem_zh = t2;
             var els = document.querySelectorAll('.shot-poem-line[data-idx="'+i+'"]');
             els.forEach(function(e){ e.innerHTML = t2.trim().split('\n').filter(function(l){return l.trim();}).map(function(l){return esc(l);}).join('<br>'); });
           }
@@ -552,12 +523,10 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
   var _GENRE_MAP = {
     ko: ['감동명작','히어로 액션','잔잔한 다큐','멜로 로맨스','병맛 코미디','반전 스릴러'],
     en: ['Touching','Hero Action','Quiet Doc','Melo Romance','Absurd Comedy','Twist Thriller'],
-    ja: ['感動作','ヒーローアクション','静かなドキュメンタリー','メロロマンス','ギャグコメディ','どんでん返し'],
-    zh: ['感动佳作','英雄动作','平静纪录','爱情浪漫','无厘头喜剧','反转惊悚'],
     _idx: {}
   };
   (function(){
-    ['ko','en','ja','zh'].forEach(function(l){
+    ['ko','en'].forEach(function(l){
       _GENRE_MAP[l].forEach(function(v,i){ _GENRE_MAP._idx[v.toLowerCase()] = i; });
     });
   })();
@@ -760,10 +729,9 @@ body{background:#f5f2eb;font-family:'Noto Sans KR',sans-serif;color:#2d2a22}
     document.getElementById('loading').style.display = 'none';
     document.getElementById('main').style.display = 'block';
 
-    // Auto-apply submission language (index.html sends 'jp'; result page uses 'ja')
+    // Auto-apply submission language (jp/zh/ja no longer supported — safely fall back to ko)
     var _storedLang = (data.lang || 'ko').toLowerCase();
-    var _langAlias = {jp: 'ja'};
-    var _tabLang = _langAlias[_storedLang] || _storedLang;
+    var _tabLang = (_storedLang === 'en') ? 'en' : 'ko';
     if (_tabLang !== 'ko') {
       document.querySelectorAll('.lang-tab').forEach(function(btn) {
         var m = btn.getAttribute('onclick') && btn.getAttribute('onclick').match(/selectLang\('(\w+)'/);
